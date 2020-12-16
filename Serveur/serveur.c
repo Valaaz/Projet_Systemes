@@ -6,16 +6,22 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 #define PORT 6000
+
+typedef struct {
+    int fdSocketCommunication;
+    struct sockaddr_in coordonneesAppelant;
+} Com;
+
+void *connexion(void *arg);
+
 int main()
 {
+    Com donnees;
     int fdSocketAttente;
-    int fdSocketCommunication;
     struct sockaddr_in coordonneesServeur;
-    struct sockaddr_in coordonneesAppelant;
-    char tampon[100];
-    int nbRecu;
     int longueurAdresse;
     fdSocketAttente = socket(PF_INET, SOCK_STREAM, 0);
     if (fdSocketAttente < 0)
@@ -44,33 +50,47 @@ int main()
         printf("erreur de listen\n");
         exit(-1);
     }
-
-    socklen_t tailleCoord = sizeof(coordonneesAppelant);
+    
+    socklen_t tailleCoord = sizeof(donnees.coordonneesAppelant);
     while (1)
     {
-        if ((fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *)&coordonneesAppelant,
+        printf("Attente\n");
+        if ((donnees.fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *)&donnees.coordonneesAppelant,
                                             &tailleCoord)) == -1)
         {
             printf("erreur de accept\n");
             exit(-1);
         }
-
-        printf("Client connecté. IP : %s\n", inet_ntoa(coordonneesAppelant.sin_addr));
-        nbRecu = recv(fdSocketCommunication, tampon, 99, 0);
-        if (nbRecu > 0)
+        else
         {
-            tampon[nbRecu] = 0;
-            printf("Recu:%s\n", tampon);
+            pthread_t my_thread;
+            int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)&donnees);
         }
-
-        fgets(tampon, 100, stdin);
-        send(fdSocketCommunication, tampon, strlen(tampon), 0);
-
-        close(fdSocketCommunication);
-        printf("Attente de connexion\n");
+        
     }
+    
+    //pthread_join(my_thread, NULL);
 
     close(fdSocketAttente);
 
     return 0;
+}
+
+void *connexion(void *arg)
+{
+    Com *structure = (Com *) arg;
+    char tampon[100];
+    printf("Client connecté. IP : %s\n", inet_ntoa(structure->coordonneesAppelant.sin_addr));
+    int nbRecu = recv(structure->fdSocketCommunication, tampon, 99, 0);
+    if (nbRecu > 0)
+    {
+        tampon[nbRecu] = 0;
+        printf("Recu:%s\n", tampon);
+    }
+
+    fgets(tampon, 100, stdin);
+    send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
+
+    close(structure->fdSocketCommunication);
+    printf("Attente de connexion\n");
 }
