@@ -6,12 +6,15 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+
 #define PORT 6000
+
 int main()
 {
     int fdSocket;
     int nbRecu;
     struct sockaddr_in coordonneesServeur;
+    char nom[3] = {'c', '1', '\0'};
     int longueurAdresse;
     char tampon[100];
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -27,6 +30,7 @@ int main()
     coordonneesServeur.sin_family = PF_INET;
     // adresse du serveur
     inet_aton("127.0.0.1", &coordonneesServeur.sin_addr);
+
     // toutes les interfaces locales disponibles
     coordonneesServeur.sin_port = htons(PORT);
     if (connect(fdSocket, (struct sockaddr *)&coordonneesServeur, sizeof(coordonneesServeur)) == -1)
@@ -35,6 +39,8 @@ int main()
         exit(-1);
     }
     printf("connexion ok\n");
+    printf("Client : %s\n", nom);
+    send(fdSocket, nom, strlen(nom), 0);
 
     fgets(tampon, 100, stdin);
     send(fdSocket, tampon, strlen(tampon), 0);

@@ -13,6 +13,7 @@
 typedef struct {
     int fdSocketCommunication;
     struct sockaddr_in coordonneesAppelant;
+    char nom[3];
 } Com;
 
 void *connexion(void *arg);
@@ -51,10 +52,11 @@ int main()
         exit(-1);
     }
     
+    printf("Attente\n");
+
     socklen_t tailleCoord = sizeof(donnees.coordonneesAppelant);
     while (1)
     {
-        printf("Attente\n");
         if ((donnees.fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *)&donnees.coordonneesAppelant,
                                             &tailleCoord)) == -1)
         {
@@ -80,7 +82,11 @@ void *connexion(void *arg)
 {
     Com *structure = (Com *) arg;
     char tampon[100];
+    char nom[10];
     printf("Client connecté. IP : %s\n", inet_ntoa(structure->coordonneesAppelant.sin_addr));
+    recv(structure->fdSocketCommunication, nom, 10, 0);
+
+    printf("Client : %s\n", nom);
     int nbRecu = recv(structure->fdSocketCommunication, tampon, 99, 0);
     if (nbRecu > 0)
     {
