@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <string.h>
 
+#include "../Concert/concert.c"
+
 #define PORT 6000
 
 int main()
@@ -14,9 +16,10 @@ int main()
     int fdSocket;
     int nbRecu;
     struct sockaddr_in coordonneesServeur;
-    char nom[3] = {'c', '1', '\0'};
+    char nom[] = "c1";
     int longueurAdresse;
     char tampon[100];
+
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (fdSocket < 0)
     {
@@ -39,8 +42,9 @@ int main()
         exit(-1);
     }
     printf("connexion ok\n");
-    printf("Client : %s\n", nom);
     send(fdSocket, nom, strlen(nom), 0);
+
+    choixAction(nom);
 
     fgets(tampon, 100, stdin);
     send(fdSocket, tampon, strlen(tampon), 0);

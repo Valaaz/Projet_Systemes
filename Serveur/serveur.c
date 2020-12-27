@@ -8,9 +8,14 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
+#include "../Concert/concert.c"
+
 #define PORT 6000
 
-typedef struct {
+//pthread_mutex_t mutex;
+
+typedef struct
+{
     int fdSocketCommunication;
     struct sockaddr_in coordonneesAppelant;
     char nom[3];
@@ -31,6 +36,12 @@ int main()
         exit(-1);
     }
 
+    /*
+    if (pthread_mutex_init(&mutex, NULL) != 0)
+    {
+        printf("initialisation du mutex echouée\n");
+    }
+    */
     // On prépare l’adresse d’attachement locale
     longueurAdresse = sizeof(struct sockaddr_in);
     memset(&coordonneesServeur, 0x00, longueurAdresse);
@@ -51,14 +62,14 @@ int main()
         printf("erreur de listen\n");
         exit(-1);
     }
-    
+
     printf("Attente\n");
 
     socklen_t tailleCoord = sizeof(donnees.coordonneesAppelant);
     while (1)
     {
         if ((donnees.fdSocketCommunication = accept(fdSocketAttente, (struct sockaddr *)&donnees.coordonneesAppelant,
-                                            &tailleCoord)) == -1)
+                                                    &tailleCoord)) == -1)
         {
             printf("erreur de accept\n");
             exit(-1);
@@ -67,11 +78,11 @@ int main()
         {
             pthread_t my_thread;
             int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)&donnees);
+            //pthread_join(my_thread, NULL);
         }
-        
     }
-    
-    //pthread_join(my_thread, NULL);
+
+    //pthread_mutex_destroy(&mutex);
 
     close(fdSocketAttente);
 
@@ -80,7 +91,9 @@ int main()
 
 void *connexion(void *arg)
 {
-    Com *structure = (Com *) arg;
+    //pthread_mutex_lock(&mutex);
+
+    Com *structure = (Com *)arg;
     char tampon[100];
     char nom[10];
     printf("Client connecté. IP : %s\n", inet_ntoa(structure->coordonneesAppelant.sin_addr));
@@ -98,5 +111,7 @@ void *connexion(void *arg)
     send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
 
     close(structure->fdSocketCommunication);
-    printf("Attente de connexion\n");
+    printf("Fin du client n°%s\nAttente de connexion\n", nom);
+
+    //pthread_mutex_unlock(&mutex);
 }
