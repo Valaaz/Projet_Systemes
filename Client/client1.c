@@ -44,11 +44,12 @@ int main()
     }
     printf("connexion ok\n");
     send(fdSocket, nom, strlen(nom), 0);
-
-    //choixAction(nom);
+    printf("Client: %s\n", nom);
+    printf("\n-----------Bienvenue-----------\n");
 
     while (quitter != 0)
     {
+        /*
         fgets(tampon, 100, stdin);
         send(fdSocket, tampon, strlen(tampon), 0);
         nbRecu = recv(fdSocket, tampon, 99, 0);
@@ -57,6 +58,8 @@ int main()
             tampon[nbRecu] = 0;
             printf("Recu:%s\n", tampon);
         }
+        */
+        choixAction();
     }
 
     close(fdSocket);
