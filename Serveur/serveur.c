@@ -100,15 +100,19 @@ void *connexion(void *arg)
     recv(structure->fdSocketCommunication, nom, 10, 0);
 
     printf("Client : %s\n", nom);
-    int nbRecu = recv(structure->fdSocketCommunication, tampon, 99, 0);
-    if (nbRecu > 0)
-    {
-        tampon[nbRecu] = 0;
-        printf("Recu:%s\n", tampon);
-    }
 
-    fgets(tampon, 100, stdin);
-    send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
+    while (1)
+    {
+        int nbRecu = recv(structure->fdSocketCommunication, tampon, 99, 0);
+        if (nbRecu > 0)
+        {
+            tampon[nbRecu] = 0;
+            printf("Recu:%s\n", tampon);
+        }
+
+        fgets(tampon, 100, stdin);
+        send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
+    }
 
     close(structure->fdSocketCommunication);
     printf("Fin du client n°%s\nAttente de connexion\n", nom);

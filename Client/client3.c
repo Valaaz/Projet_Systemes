@@ -6,19 +6,14 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
-
 #define PORT 6000
-
 int main()
 {
     int fdSocket;
     int nbRecu;
-    int longueurAdresse;
-    int quitter = 1;
-    char nom[3] = {'c', '2', '\0'};
-    char tampon[100];
     struct sockaddr_in coordonneesServeur;
-
+    int longueurAdresse;
+    char tampon[100];
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (fdSocket < 0)
     {
@@ -40,10 +35,8 @@ int main()
         exit(-1);
     }
     printf("connexion ok\n");
-    send(fdSocket, nom, strlen(nom), 0);
-    printf("Client : %s\n", nom);
 
-    while (quitter != 0)
+    while (1)
     {
         fgets(tampon, 100, stdin);
         send(fdSocket, tampon, strlen(tampon), 0);

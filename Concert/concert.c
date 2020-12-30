@@ -26,7 +26,7 @@ void annuleUnePlace()
  */
 void affichePlace()
 {
-    printf("Il reste %d places", places);
+    printf("Il reste %d places\n", places);
 }
 
 /**
@@ -44,6 +44,7 @@ void choixAction(char nom[])
     printf("Consulter les places disponibles (1)\n");
     printf("Réserver une place (2)\n");
     printf("Annuler une place (3)\n");
+    printf("Quitter (4)\n");
 
     while (choix < 1 || choix > 3)
     {
@@ -63,7 +64,7 @@ void choixAction(char nom[])
             break;
 
         default:
-            printf("Veuillez choisir un chiffre entre 1 et 3");
+            printf("Veuillez choisir un chiffre entre 1 et 3\n");
             break;
         }
     }

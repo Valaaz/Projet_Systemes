@@ -15,10 +15,11 @@ int main()
 {
     int fdSocket;
     int nbRecu;
-    struct sockaddr_in coordonneesServeur;
-    char nom[] = "c1";
     int longueurAdresse;
+    int quitter = 1;
+    char nom[] = "c1";
     char tampon[100];
+    struct sockaddr_in coordonneesServeur;
 
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
     if (fdSocket < 0)
@@ -44,15 +45,18 @@ int main()
     printf("connexion ok\n");
     send(fdSocket, nom, strlen(nom), 0);
 
-    choixAction(nom);
+    //choixAction(nom);
 
-    fgets(tampon, 100, stdin);
-    send(fdSocket, tampon, strlen(tampon), 0);
-    nbRecu = recv(fdSocket, tampon, 99, 0);
-    if (nbRecu > 0)
+    while (quitter != 0)
     {
-        tampon[nbRecu] = 0;
-        printf("Recu:%s\n", tampon);
+        fgets(tampon, 100, stdin);
+        send(fdSocket, tampon, strlen(tampon), 0);
+        nbRecu = recv(fdSocket, tampon, 99, 0);
+        if (nbRecu > 0)
+        {
+            tampon[nbRecu] = 0;
+            printf("Recu:%s\n", tampon);
+        }
     }
 
     close(fdSocket);
