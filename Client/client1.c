@@ -11,12 +11,16 @@
 
 #define PORT 6000
 
+void choixAction();
+void deconnexion();
+
+int quitter = 1;
+
 int main()
 {
     int fdSocket;
     int nbRecu;
     int longueurAdresse;
-    int quitter = 1;
     char nom[] = "c1";
     char tampon[100];
     struct sockaddr_in coordonneesServeur;
@@ -63,4 +67,71 @@ int main()
     }
 
     close(fdSocket);
+}
+
+/**
+ * @brief Affiche ce que le client peut faire
+ * @return void
+ */
+void choixAction()
+{
+    int choix = 0;
+
+    sleep(1); //Attends une seconde avant que le menu ne s'affichent afin de ne pas embrouiller l'utilisateur
+
+    printf("\nQue voulez-vous faire ?\n");
+    printf("Consulter les places disponibles (1)\n");
+    printf("Réserver une place (2)\n");
+    printf("Annuler une place (3)\n");
+    printf("Quitter (4)\n");
+
+    while (choix < 1 || choix > 4)
+    {
+        scanf("%d", &choix);
+        switch (choix)
+        {
+        case 1:
+            affichePlace();
+            break;
+
+        case 2:
+            prendUnePlace();
+            break;
+
+        case 3:
+            annuleUnePlace();
+            break;
+
+        case 4:
+            deconnexion();
+            break;
+
+        default:
+            printf("Veuillez choisir un chiffre entre 1 et 4\n");
+            break;
+        }
+    }
+}
+
+/**
+ * @brief Déconnecte le client du serveur
+ * @return void
+ */
+void deconnexion()
+{
+    int choix;
+    printf("Voulez-vous vraiment vous déconnecter ?\nOui (1) || Non (0)\n");
+    while (choix < 0 || choix > 1)
+    {
+        scanf("%d", &choix);
+        if (choix < 0 || choix > 1)
+            printf("Veuillez entrer un chiffre entre 0 et 1\n");
+    }
+    if (choix == 1)
+    {
+        quitter = 0;
+        printf("Déconnexion\n");
+    }
+    else
+        printf("Vous restez encore un peu avec nous alors :)\n");
 }
