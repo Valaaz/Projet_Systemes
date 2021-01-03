@@ -8,11 +8,14 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-#include "../Concert/concert.c"
+//#include "../Concert/concert.c"
 
 #define PORT 6000
 
 //pthread_mutex_t mutex;
+
+int places = 100;
+char place[4];
 
 typedef struct
 {
@@ -25,6 +28,7 @@ void *connexion(void *arg);
 
 int main()
 {
+    sprintf(place, "%d", places);
     Com donnees;
     int fdSocketAttente;
     struct sockaddr_in coordonneesServeur;
@@ -96,6 +100,8 @@ void *connexion(void *arg)
     Com *structure = (Com *)arg;
     char tampon[100];
     char nom[10];
+    char nbPlaces[4];
+
     printf("Client connecté. IP : %s\n", inet_ntoa(structure->coordonneesAppelant.sin_addr));
     recv(structure->fdSocketCommunication, nom, 10, 0);
 
@@ -103,15 +109,36 @@ void *connexion(void *arg)
 
     while (1)
     {
-        int nbRecu = recv(structure->fdSocketCommunication, tampon, 99, 0);
+        send(structure->fdSocketCommunication, place, 100, 0);
+        printf("Envoyé : %s\n", place);
+
+        int nbRecu = recv(structure->fdSocketCommunication, nbPlaces, 100, 0);
+        //recv(structure->fdSocketCommunication, tampon, 99, 0);
+
         if (nbRecu > 0)
         {
-            tampon[nbRecu] = 0;
-            printf("Recu:%s\n", tampon);
+            nbPlaces[nbRecu] = 0;
+            int x = atoi(nbPlaces);
+
+            printf("Recu: %s\n", nbPlaces);
+            sprintf(nbPlaces, "%d", x);
+            strncpy(place, nbPlaces, 3);
         }
 
-        fgets(tampon, 100, stdin);
-        send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
+        //fgets(tampon, 100, stdin);
+        //send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
+
+        /*
+        int choix = 2;
+        printf("Choix :\n");
+        scanf("%d", &choix);
+        if (choix == 1)
+        {
+            //printf("Adresse : %ls\n", pointeur);
+            //printf("Il reste %d places\n", *pointeur);
+            printf("Il reste %s places\n", nbPlaces);
+        }
+        */
     }
 
     close(structure->fdSocketCommunication);

@@ -19,10 +19,13 @@ int quitter = 1;
 int main()
 {
     int fdSocket;
-    int nbRecu;
     int longueurAdresse;
     char nom[] = "c1";
     char tampon[100];
+
+    char integer[4];
+    char nbPlaces[4];
+
     struct sockaddr_in coordonneesServeur;
 
     fdSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -63,7 +66,20 @@ int main()
             printf("Recu:%s\n", tampon);
         }
         */
+
+        int nbRecu = recv(fdSocket, nbPlaces, 100, 0);
+        if (nbRecu > 0)
+        {
+            nbPlaces[nbRecu] = 0;
+            printf("Recu:%s\n", nbPlaces);
+        }
+
+        x = atoi(nbPlaces);
+
         choixAction();
+        sprintf(integer, "%d", x);
+        printf("Integer : %s\n", integer);
+        send(fdSocket, integer, 100, 0);
     }
 
     close(fdSocket);
@@ -91,15 +107,15 @@ void choixAction()
         switch (choix)
         {
         case 1:
-            affichePlace();
+            affichePlace(&x);
             break;
 
         case 2:
-            prendUnePlace();
+            prendUnePlace(&x);
             break;
 
         case 3:
-            annuleUnePlace();
+            annuleUnePlace(&x);
             break;
 
         case 4:

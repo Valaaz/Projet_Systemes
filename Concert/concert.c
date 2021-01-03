@@ -1,28 +1,32 @@
 #include <stdio.h>
 
-int places = 100;
+//int places = 100;
+//int *pointeur = &places;
+int x;
 
 /**
  * @brief Affiche le nombre de place
  * @return void
  */
-void affichePlace()
+void affichePlace(int *places)
 {
-    printf("Il reste %d places\n", places);
+    //printf("Adresse : %ls\n", pointeur);
+    //printf("Il reste %d places\n", *pointeur);
+    printf("Il reste %d places\n", *places);
 }
 
 /**
  * @brief Décremente le nombre de place
  * @return void
  */
-void prendUnePlace()
+void prendUnePlace(int *places)
 {
-    if (places == 0)
+    if (*places == 0)
         printf("Désolé, il n'y a plus de places disponibles\n");
     else
     {
-        places -= 1;
-        affichePlace();
+        *places -= 1;
+        affichePlace(places);
     }
 }
 
@@ -30,7 +34,7 @@ void prendUnePlace()
  * @brief Incrémente le nombre de place
  * @return void
  */
-void annuleUnePlace()
+void annuleUnePlace(int *places)
 {
     int choix;
     printf("Voulez-vous vraiment annuler votre place ?\nOui (1) || Non (0)\n");
@@ -42,9 +46,9 @@ void annuleUnePlace()
     }
     if (choix == 1)
     {
-        places += 1;
+        *places += 1;
         printf("Place annulée\n");
-        affichePlace();
+        affichePlace(places);
     }
     else
         printf("Vous gardez votre place\n");
