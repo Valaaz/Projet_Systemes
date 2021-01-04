@@ -110,9 +110,9 @@ void *connexion(void *arg)
 
     while (boucle == 1)
     {
-        write(structure->fdSocketCommunication, "Début", 7);
+        //write(structure->fdSocketCommunication, "Début", 7);
 
-        //choixAction(structure->fdSocketCommunication);
+        write(structure->fdSocketCommunication, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nQuitter (4)\n", 99);
 
         int nbRecu = recv(structure->fdSocketCommunication, tampon, 100, 0);
         //recv(structure->fdSocketCommunication, tampon, 99, 0);
@@ -121,6 +121,8 @@ void *connexion(void *arg)
         {
             tampon[nbRecu] = 0;
             printf("Recu: %s\n", tampon);
+            int choix = atoi(tampon);
+            choixAction(structure->fdSocketCommunication, choix);
         }
         else
         {
@@ -150,48 +152,37 @@ void *connexion(void *arg)
 }
 
 /**
- * @brief Affiche ce que le client peut faire
+ * @brief Effectue une action en fonction du choix du client
  * @return void
  */
-void choixAction(int s)
+void choixAction(int s, int choix)
 {
-    int choix = 0;
+    //sleep(1); //Attends une seconde avant que le menu ne s'affichent afin de ne pas embrouiller l'utilisateur
 
-    sleep(1); //Attends une seconde avant que le menu ne s'affichent afin de ne pas embrouiller l'utilisateur
-
-    write(s, "\nQue voulez-vous faire ?", 100);
-    write(s, "Consulter les places disponibles (1)", 100);
-    write(s, "Réserver une place (2)", 100);
-    write(s, "Annuler une place (3)", 100);
-    write(s, "Quitter (4)\n", 100);
-
-    while (choix < 1 || choix > 4)
+    switch (choix)
     {
-        scanf("%d", &choix);
-        switch (choix)
-        {
-        case 1:
-            //affichePlace(&x);
-            write(s, "Cas 1", 6);
-            break;
+    case 1:
+        //affichePlace(&x);
+        write(s, "Cas 1", 6);
+        break;
 
-        case 2:
-            //prendUnePlace(&x);
-            write(s, "Cas 2", 6);
-            break;
+    case 2:
+        //prendUnePlace(&x);
+        write(s, "Cas 2", 6);
+        break;
 
-        case 3:
-            //annuleUnePlace(&x);
-            write(s, "Cas 3", 6);
-            break;
+    case 3:
+        //annuleUnePlace(&x);
+        write(s, "Cas 3", 6);
+        break;
 
-        case 4:
-            //deconnexion();
-            break;
+    case 4:
+        //deconnexion();
+        write(s, "Cas 4", 6);
+        break;
 
-        default:
-            printf("Veuillez choisir un chiffre entre 1 et 4\n");
-            break;
-        }
+    default:
+        printf("Veuillez choisir un chiffre entre 1 et 4\n");
+        break;
     }
 }
