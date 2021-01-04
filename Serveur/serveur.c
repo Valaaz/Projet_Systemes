@@ -25,6 +25,7 @@ typedef struct
 } Com;
 
 void *connexion(void *arg);
+void choixAction();
 
 int main()
 {
@@ -96,7 +97,7 @@ int main()
 void *connexion(void *arg)
 {
     //pthread_mutex_lock(&mutex);
-
+    int boucle = 1;
     Com *structure = (Com *)arg;
     char tampon[100];
     char nom[10];
@@ -107,22 +108,23 @@ void *connexion(void *arg)
 
     printf("Client : %s\n", nom);
 
-    while (1)
+    while (boucle == 1)
     {
-        send(structure->fdSocketCommunication, place, 100, 0);
-        printf("Envoyé : %s\n", place);
+        write(structure->fdSocketCommunication, "Début", 7);
 
-        int nbRecu = recv(structure->fdSocketCommunication, nbPlaces, 100, 0);
+        //choixAction(structure->fdSocketCommunication);
+
+        int nbRecu = recv(structure->fdSocketCommunication, tampon, 100, 0);
         //recv(structure->fdSocketCommunication, tampon, 99, 0);
 
         if (nbRecu > 0)
         {
-            nbPlaces[nbRecu] = 0;
-            int x = atoi(nbPlaces);
-
-            printf("Recu: %s\n", nbPlaces);
-            sprintf(nbPlaces, "%d", x);
-            strncpy(place, nbPlaces, 3);
+            tampon[nbRecu] = 0;
+            printf("Recu: %s\n", tampon);
+        }
+        else
+        {
+            boucle = 0;
         }
 
         //fgets(tampon, 100, stdin);
@@ -145,4 +147,51 @@ void *connexion(void *arg)
     printf("Fin du client n°%s\nAttente de connexion\n", nom);
 
     //pthread_mutex_unlock(&mutex);
+}
+
+/**
+ * @brief Affiche ce que le client peut faire
+ * @return void
+ */
+void choixAction(int s)
+{
+    int choix = 0;
+
+    sleep(1); //Attends une seconde avant que le menu ne s'affichent afin de ne pas embrouiller l'utilisateur
+
+    write(s, "\nQue voulez-vous faire ?", 100);
+    write(s, "Consulter les places disponibles (1)", 100);
+    write(s, "Réserver une place (2)", 100);
+    write(s, "Annuler une place (3)", 100);
+    write(s, "Quitter (4)\n", 100);
+
+    while (choix < 1 || choix > 4)
+    {
+        scanf("%d", &choix);
+        switch (choix)
+        {
+        case 1:
+            //affichePlace(&x);
+            write(s, "Cas 1", 6);
+            break;
+
+        case 2:
+            //prendUnePlace(&x);
+            write(s, "Cas 2", 6);
+            break;
+
+        case 3:
+            //annuleUnePlace(&x);
+            write(s, "Cas 3", 6);
+            break;
+
+        case 4:
+            //deconnexion();
+            break;
+
+        default:
+            printf("Veuillez choisir un chiffre entre 1 et 4\n");
+            break;
+        }
+    }
 }

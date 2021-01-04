@@ -7,12 +7,14 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-#include "../Concert/concert.c"
-
 #define PORT 6000
 
-void choixAction();
 void deconnexion();
+void affichePlace(int *places);
+void prendUnePlace(int *places);
+void annuleUnePlace(int *places);
+void viderBuffer();
+int readC(char *chaine, int longueur);
 
 int quitter = 1;
 
@@ -20,9 +22,10 @@ int main()
 {
     int fdSocket;
     int longueurAdresse;
+    char choix[10];
+    int res;
     char nom[] = "c1";
     char tampon[100];
-
     char integer[4];
     char nbPlaces[4];
 
@@ -71,24 +74,68 @@ int main()
         if (nbRecu > 0)
         {
             nbPlaces[nbRecu] = 0;
-            printf("Recu:%s\n", nbPlaces);
+            printf("%s\n", nbPlaces);
         }
 
-        x = atoi(nbPlaces);
-
-        choixAction();
-        sprintf(integer, "%d", x);
-        printf("Integer : %s\n", integer);
-        send(fdSocket, integer, 100, 0);
+        printf("Choix :\n");
+        do
+        {
+            //fgets(choix, 10, stdin);
+            //scanf("%s", &choix);
+            readC(choix, 10);
+            res = atoi(choix);
+            //res = (int)strtol(choix, NULL, 10);
+            if (res < 1 || res > 4)
+                printf("Veuillez choisir un chiffre entre 1 et 4\n");
+        } while (res < 1 || res > 4);
+        sprintf(tampon, "%d", res);
+        send(fdSocket, tampon, 100, 0);
     }
 
     close(fdSocket);
+}
+
+// Les 2 fonctions suivantes ont été repris du projet C du premier semestre 2019
+/**
+ * @brief Vide le buffer
+ * @return void
+ */
+void viderBuffer()
+{
+    int c = 0;
+    while (c != '\n' && c != EOF)
+        c = getchar();
+}
+
+/**
+ * @brief Permet de lire une string
+ * @return 1 ou EXIT_FAILURE
+ */
+int readC(char *chaine, int longueur)
+{
+    char *positionEntree = NULL;
+
+    if (fgets(chaine, longueur, stdin) != NULL)
+    {
+        positionEntree = strchr(chaine, '\n');
+        if (positionEntree != NULL)
+            *positionEntree = '\0';
+        else
+            viderBuffer();
+        return 1;
+    }
+    else
+    {
+        viderBuffer();
+        return EXIT_FAILURE;
+    }
 }
 
 /**
  * @brief Affiche ce que le client peut faire
  * @return void
  */
+/*
 void choixAction()
 {
     int choix = 0;
@@ -128,6 +175,7 @@ void choixAction()
         }
     }
 }
+*/
 
 /**
  * @brief Déconnecte le client du serveur
@@ -150,4 +198,54 @@ void deconnexion()
     }
     else
         printf("Vous restez encore un peu avec nous alors :)\n");
+}
+
+/**
+ * @brief Affiche le nombre de place
+ * @return void
+ */
+void affichePlace(int *places)
+{
+    //printf("Adresse : %ls\n", pointeur);
+    //printf("Il reste %d places\n", *pointeur);
+    printf("Il reste %d places\n", *places);
+}
+
+/**
+ * @brief Décremente le nombre de place
+ * @return void
+ */
+void prendUnePlace(int *places)
+{
+    if (*places == 0)
+        printf("Désolé, il n'y a plus de places disponibles\n");
+    else
+    {
+        *places -= 1;
+        affichePlace(places);
+    }
+}
+
+/**
+ * @brief Incrémente le nombre de place
+ * @return void
+ */
+void annuleUnePlace(int *places)
+{
+    int choix;
+    printf("Voulez-vous vraiment annuler votre place ?\nOui (1) || Non (0)\n");
+    while (choix < 0 || choix > 1)
+    {
+        scanf("%d", &choix);
+        if (choix < 0 || choix > 1)
+            printf("Veuillez entrer un chiffre entre 0 et 1\n");
+    }
+    if (choix == 1)
+    {
+        *places += 1;
+        printf("Place annulée\n");
+        affichePlace(places);
+    }
+    else
+        printf("Vous gardez votre place\n");
 }
