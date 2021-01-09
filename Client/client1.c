@@ -118,6 +118,7 @@ void prendUnePlace(int s)
 
     scanf("%s", nom);
     send(s, nom, 256, 0);
+    recv(s, buffer, 256, 0);
 
     printf("Nom : %s\n", nom);
 }

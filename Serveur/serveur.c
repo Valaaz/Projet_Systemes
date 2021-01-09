@@ -27,6 +27,7 @@ typedef struct
 typedef struct
 {
     char *numDossier;
+    char *nom;
     int disponible;
 } Place;
 
@@ -40,6 +41,7 @@ int main()
     for (int i = 1; i <= 100; i++)
     {
         tablePlaces[i].numDossier = NULL;
+        tablePlaces[i].nom = NULL;
         tablePlaces[i].disponible = 1;
     }
 
@@ -161,12 +163,13 @@ void *connexion(void *arg)
                 recv(structure->fdSocketCommunication, buffer, 256, 0);
                 printf("Buffer : %s\n", buffer);
 
-                /*
                 for (i = 1; i <= 100; i++)
                 {
                     if (tablePlaces[i].disponible == 1)
                     {
                         tablePlaces[i].disponible = 0;
+                        tablePlaces[i].nom = buffer;
+
                         break;
                     }
                 }
@@ -174,11 +177,13 @@ void *connexion(void *arg)
                     write(structure->fdSocketCommunication, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
                 else
                 {
+                    /*
                     sprintf(stringPlc, "%d", i);
                     strcat(msg, stringPlc);
                     write(structure->fdSocketCommunication, msg, strlen(msg));
+                    */
+                    printf("Nom de la place n°%d: %s\n", i, tablePlaces[i].nom);
                 }
-                */
                 break;
 
             default:
