@@ -36,6 +36,7 @@ void *connexion(void *arg);
 void choixAction();
 void affichePlaces(int s);
 void prendUnePlace(int s);
+void deconnexion(int s);
 
 int main()
 {
@@ -99,7 +100,7 @@ int main()
         {
             pthread_t my_thread;
             int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)&donnees);
-            //pthread_join(my_thread, NULL);
+            pthread_join(my_thread, NULL);
         }
     }
 
@@ -127,10 +128,7 @@ void *connexion(void *arg)
 
     while (boucle == 1)
     {
-        //write(structure->fdSocketCommunication, "Début", 7);
-
         int nbRecu = recv(structure->fdSocketCommunication, buffer, 256, 0);
-        //recv(structure->fdSocketCommunication, tampon, 99, 0);
 
         if (nbRecu > 0)
         {
@@ -144,21 +142,6 @@ void *connexion(void *arg)
         {
             boucle = 0;
         }
-
-        //fgets(tampon, 100, stdin);
-        //send(structure->fdSocketCommunication, tampon, strlen(tampon), 0);
-
-        /*
-        int choix = 2;
-        printf("Choix :\n");
-        scanf("%d", &choix);
-        if (choix == 1)
-        {
-            //printf("Adresse : %ls\n", pointeur);
-            //printf("Il reste %d places\n", *pointeur);
-            printf("Il reste %s places\n", nbPlaces);
-        }
-        */
     }
 
     close(structure->fdSocketCommunication);
@@ -191,8 +174,7 @@ void choixAction(int s, int choix)
         break;
 
     case 4:
-        //deconnexion();
-        write(s, "Cas 4", 6);
+        deconnexion(s);
         break;
 
     default:
@@ -248,4 +230,14 @@ void prendUnePlace(int s)
         strcat(message, stringPlaces);
         write(s, message, strlen(message));
     }
+}
+
+/**
+ * @brief Déconnecte le client du serveur
+ * @return void
+ */
+void deconnexion(int s)
+{
+    write(s, "Déconnexion..", strlen("Déconnexion.."));
+    //send(s, "0", strlen("0"), 0);
 }

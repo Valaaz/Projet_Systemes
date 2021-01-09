@@ -59,18 +59,8 @@ int main()
 
     while (quitter != 0)
     {
-        /*
-        fgets(tampon, 100, stdin);
-        send(fdSocket, tampon, strlen(tampon), 0);
-        nbRecu = recv(fdSocket, tampon, 99, 0);
-        if (nbRecu > 0)
-        {
-            tampon[nbRecu] = 0;
-            printf("Recu:%s\n", tampon);
-        }
-        */
-
         int nbRecu = recv(fdSocket, buffer, 256, 0);
+
         if (nbRecu > 0)
         {
             buffer[nbRecu] = 0;
