@@ -64,6 +64,7 @@ int main()
         printf("initialisation du mutex echouée\n");
     }
     */
+
     // On prépare l’adresse d’attachement locale
     longueurAdresse = sizeof(struct sockaddr_in);
     memset(&coordonneesServeur, 0x00, longueurAdresse);
@@ -100,7 +101,7 @@ int main()
         {
             pthread_t my_thread;
             int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)&donnees);
-            pthread_join(my_thread, NULL);
+            //pthread_join(my_thread, NULL);
         }
     }
 
@@ -113,7 +114,6 @@ int main()
 
 void *connexion(void *arg)
 {
-    //pthread_mutex_lock(&mutex);
     int boucle = 1;
     Com *structure = (Com *)arg;
     char buffer[256];
@@ -124,10 +124,11 @@ void *connexion(void *arg)
     recv(structure->fdSocketCommunication, nom, 10, 0);
 
     printf("Client : %s\n", nom);
-    write(structure->fdSocketCommunication, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", 200);
 
     while (boucle == 1)
     {
+        write(structure->fdSocketCommunication, "\n\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", strlen("\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n"));
+
         int nbRecu = recv(structure->fdSocketCommunication, buffer, 256, 0);
 
         if (nbRecu > 0)
@@ -146,8 +147,6 @@ void *connexion(void *arg)
 
     close(structure->fdSocketCommunication);
     printf("Fin du client n°%s\nAttente de connexion\n", nom);
-
-    //pthread_mutex_unlock(&mutex);
 }
 
 /**
@@ -203,6 +202,8 @@ void affichePlaces(int s)
     strcat(message, stringPlaces);
 
     write(s, message, strlen(message));
+    //sleep(1);
+    //write(s, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", strlen("\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n"));
 }
 
 /**
@@ -211,6 +212,8 @@ void affichePlaces(int s)
  */
 void prendUnePlace(int s)
 {
+    //pthread_mutex_lock(&mutex);
+
     int i;
     char message[100] = "Vous avez la place n°";
     char stringPlaces[4];
@@ -223,13 +226,15 @@ void prendUnePlace(int s)
         }
     }
     if (tablePlaces[100].disponible == 0)
-        write(s, "Désolé, il n'y a plus de places disponibles..\n", 50);
+        write(s, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
     else
     {
         sprintf(stringPlaces, "%d", i);
         strcat(message, stringPlaces);
         write(s, message, strlen(message));
     }
+
+    //pthread_mutex_unlock(&mutex);
 }
 
 /**
@@ -239,5 +244,6 @@ void prendUnePlace(int s)
 void deconnexion(int s)
 {
     write(s, "Déconnexion..", strlen("Déconnexion.."));
+    //shutdown(s, SHUT_RDWR);
     //send(s, "0", strlen("0"), 0);
 }

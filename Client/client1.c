@@ -68,7 +68,7 @@ int main()
             fflush(stdout);
         }
 
-        printf("Choix :\n");
+        printf("Choix : ");
         do
         {
             readC(choix, 10);
