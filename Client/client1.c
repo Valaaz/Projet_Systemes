@@ -9,10 +9,8 @@
 
 #define PORT 6000
 
+void prendUnePlace(int s);
 void deconnexion();
-void affichePlace(int *places);
-void prendUnePlace(int *places);
-void annuleUnePlace(int *places);
 void viderBuffer();
 int readC(char *chaine, int longueur);
 
@@ -24,10 +22,11 @@ int main()
     int longueurAdresse;
     char choix[10];
     int res;
-    char nom[] = "c1";
+    //char nom[] = "c1";
     char tampon[100];
     char buffer[256];
     char integer[4];
+    char nom[256];
 
     struct sockaddr_in coordonneesServeur;
 
@@ -59,14 +58,7 @@ int main()
 
     while (quitter != 0)
     {
-        int nbRecu = recv(fdSocket, buffer, 256, 0);
-
-        if (nbRecu > 0)
-        {
-            buffer[nbRecu] = 0;
-            printf("%s\n", buffer);
-            fflush(stdout);
-        }
+        printf("\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n");
 
         printf("Choix : ");
         do
@@ -77,10 +69,57 @@ int main()
                 printf("Veuillez choisir un chiffre entre 1 et 4\n");
         } while (res < 1 || res > 4);
         sprintf(tampon, "%d", res);
-        send(fdSocket, tampon, 100, 0);
+        send(fdSocket, tampon, strlen(tampon), 0);
+
+        switch (res)
+        {
+        case 1:
+            break;
+        case 2:
+            prendUnePlace(fdSocket);
+            break;
+
+        case 3:
+            //annuleUnePlace(&x);
+            break;
+
+        case 4:
+            //deconnexion();
+            break;
+
+        default:
+            printf("Veuillez choisir un chiffre entre 1 et 4\n");
+            break;
+        }
+
+        int nbRecu = recv(fdSocket, buffer, 256, 0);
+
+        if (nbRecu > 0)
+        {
+            buffer[nbRecu] = 0;
+            printf("%s\n", buffer);
+            fflush(stdout);
+        }
     }
 
     close(fdSocket);
+}
+
+/**
+ * @brief Décremente le nombre de place
+ * @return void
+ */
+void prendUnePlace(int s)
+{
+    char nom[50];
+    char buffer[256];
+
+    printf("Saissisez votre nom : \n");
+
+    scanf("%s", nom);
+    send(s, nom, 256, 0);
+
+    printf("Nom : %s\n", nom);
 }
 
 // Les 2 fonctions suivantes ont été repris du projet C du premier semestre 2019
@@ -120,52 +159,6 @@ int readC(char *chaine, int longueur)
 }
 
 /**
- * @brief Affiche ce que le client peut faire
- * @return void
- */
-/*
-void choixAction()
-{
-    int choix = 0;
-
-    sleep(1); //Attends une seconde avant que le menu ne s'affichent afin de ne pas embrouiller l'utilisateur
-
-    printf("\nQue voulez-vous faire ?\n");
-    printf("Consulter les places disponibles (1)\n");
-    printf("Réserver une place (2)\n");
-    printf("Annuler une place (3)\n");
-    printf("Quitter (4)\n");
-
-    while (choix < 1 || choix > 4)
-    {
-        scanf("%d", &choix);
-        switch (choix)
-        {
-        case 1:
-            affichePlace(&x);
-            break;
-
-        case 2:
-            prendUnePlace(&x);
-            break;
-
-        case 3:
-            annuleUnePlace(&x);
-            break;
-
-        case 4:
-            deconnexion();
-            break;
-
-        default:
-            printf("Veuillez choisir un chiffre entre 1 et 4\n");
-            break;
-        }
-    }
-}
-*/
-
-/**
  * @brief Déconnecte le client du serveur
  * @return void
 void deconnexion()
@@ -185,21 +178,6 @@ void deconnexion()
     }
     else
         printf("Vous restez encore un peu avec nous alors :)\n");
-}
- */
-
-/**
- * @brief Décremente le nombre de place
- * @return void
-void prendUnePlace(int *places)
-{
-    if (*places == 0)
-        printf("Désolé, il n'y a plus de places disponibles\n");
-    else
-    {
-        *places -= 1;
-        affichePlace(places);
-    }
 }
  */
 

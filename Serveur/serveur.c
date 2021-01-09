@@ -33,9 +33,6 @@ typedef struct
 Place tablePlaces[100];
 
 void *connexion(void *arg);
-void choixAction();
-void affichePlaces(int s);
-void prendUnePlace(int s);
 void deconnexion(int s);
 
 int main()
@@ -127,7 +124,13 @@ void *connexion(void *arg)
 
     while (boucle == 1)
     {
-        write(structure->fdSocketCommunication, "\n\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", strlen("\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n"));
+        int nbPlaces = 0;
+        char message[100] = "Nombre de places restantes : ";
+        char stringPlaces[4];
+
+        int i;
+        char msg[100] = "Vous avez la place n°";
+        char stringPlc[4];
 
         int nbRecu = recv(structure->fdSocketCommunication, buffer, 256, 0);
 
@@ -136,8 +139,51 @@ void *connexion(void *arg)
             buffer[nbRecu] = 0;
             printf("Recu: %s\n", buffer);
             int choix = atoi(buffer);
-            fflush(stdout);
-            choixAction(structure->fdSocketCommunication, choix);
+            //fflush(stdout);
+
+            switch (choix)
+            {
+            case 1:
+
+                for (int i = 1; i <= 100; i++)
+                {
+                    if (tablePlaces[i].disponible == 1)
+                        nbPlaces++;
+                }
+
+                sprintf(stringPlaces, "%d", nbPlaces);
+                strcat(message, stringPlaces);
+
+                write(structure->fdSocketCommunication, message, strlen(message));
+                break;
+
+            case 2:
+                recv(structure->fdSocketCommunication, buffer, 256, 0);
+                printf("Buffer : %s\n", buffer);
+
+                /*
+                for (i = 1; i <= 100; i++)
+                {
+                    if (tablePlaces[i].disponible == 1)
+                    {
+                        tablePlaces[i].disponible = 0;
+                        break;
+                    }
+                }
+                if (tablePlaces[100].disponible == 0)
+                    write(structure->fdSocketCommunication, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
+                else
+                {
+                    sprintf(stringPlc, "%d", i);
+                    strcat(msg, stringPlc);
+                    write(structure->fdSocketCommunication, msg, strlen(msg));
+                }
+                */
+                break;
+
+            default:
+                break;
+            }
         }
         else
         {
@@ -147,63 +193,6 @@ void *connexion(void *arg)
 
     close(structure->fdSocketCommunication);
     printf("Fin du client n°%s\nAttente de connexion\n", nom);
-}
-
-/**
- * @brief Effectue une action en fonction du choix du client
- * @return void
- */
-void choixAction(int s, int choix)
-{
-    //sleep(1); //Attends une seconde avant que le menu ne s'affichent afin de ne pas embrouiller l'utilisateur
-
-    switch (choix)
-    {
-    case 1:
-        affichePlaces(s);
-        break;
-
-    case 2:
-        prendUnePlace(s);
-        break;
-
-    case 3:
-        //annuleUnePlace(&x);
-        write(s, "Cas 3", 6);
-        break;
-
-    case 4:
-        deconnexion(s);
-        break;
-
-    default:
-        printf("Veuillez choisir un chiffre entre 1 et 4\n");
-        break;
-    }
-}
-
-/**
- * @brief Affiche le nombre de place restant
- * @return void
- */
-void affichePlaces(int s)
-{
-    int nbPlaces = 0;
-    char message[100] = "Nombre de places restantes : ";
-    char stringPlaces[4];
-
-    for (int i = 1; i <= 100; i++)
-    {
-        if (tablePlaces[i].disponible == 1)
-            nbPlaces++;
-    }
-
-    sprintf(stringPlaces, "%d", nbPlaces);
-    strcat(message, stringPlaces);
-
-    write(s, message, strlen(message));
-    //sleep(1);
-    //write(s, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", strlen("\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n"));
 }
 
 /**
@@ -217,6 +206,15 @@ void prendUnePlace(int s)
     int i;
     char message[100] = "Vous avez la place n°";
     char stringPlaces[4];
+    char nomClient[256];
+
+    write(s, "Quel est votre nom ?", strlen("Quel est votre nom ?"));
+    fflush(stdout);
+    recv(s, nomClient, 256, 0);
+    write(s, nomClient, strlen("nomClient"));
+    fflush(stdout);
+
+    /*
     for (i = 1; i <= 100; i++)
     {
         if (tablePlaces[i].disponible == 1)
@@ -233,6 +231,7 @@ void prendUnePlace(int s)
         strcat(message, stringPlaces);
         write(s, message, strlen(message));
     }
+    */
 
     //pthread_mutex_unlock(&mutex);
 }
