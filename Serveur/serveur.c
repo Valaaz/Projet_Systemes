@@ -35,10 +35,11 @@ Place tablePlaces[100];
 void *connexion(void *arg);
 void choixAction();
 void affichePlaces(int s);
+void prendUnePlace(int s);
 
 int main()
 {
-    for (int i = 0; i < 100; i++)
+    for (int i = 1; i <= 100; i++)
     {
         tablePlaces[i].numDossier = NULL;
         tablePlaces[i].disponible = 1;
@@ -114,7 +115,7 @@ void *connexion(void *arg)
     //pthread_mutex_lock(&mutex);
     int boucle = 1;
     Com *structure = (Com *)arg;
-    char tampon[100];
+    char buffer[256];
     char nom[10];
     char nbPlaces[4];
 
@@ -122,21 +123,21 @@ void *connexion(void *arg)
     recv(structure->fdSocketCommunication, nom, 10, 0);
 
     printf("Client : %s\n", nom);
+    write(structure->fdSocketCommunication, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", 200);
 
     while (boucle == 1)
     {
         //write(structure->fdSocketCommunication, "Début", 7);
 
-        write(structure->fdSocketCommunication, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", 200);
-
-        int nbRecu = recv(structure->fdSocketCommunication, tampon, 100, 0);
+        int nbRecu = recv(structure->fdSocketCommunication, buffer, 256, 0);
         //recv(structure->fdSocketCommunication, tampon, 99, 0);
 
         if (nbRecu > 0)
         {
-            tampon[nbRecu] = 0;
-            printf("Recu: %s\n", tampon);
-            int choix = atoi(tampon);
+            buffer[nbRecu] = 0;
+            printf("Recu: %s\n", buffer);
+            int choix = atoi(buffer);
+            fflush(stdout);
             choixAction(structure->fdSocketCommunication, choix);
         }
         else
@@ -181,8 +182,7 @@ void choixAction(int s, int choix)
         break;
 
     case 2:
-        //prendUnePlace(&x);
-        write(s, "Cas 2", 6);
+        prendUnePlace(s);
         break;
 
     case 3:
@@ -201,13 +201,17 @@ void choixAction(int s, int choix)
     }
 }
 
+/**
+ * @brief Affiche le nombre de place restant
+ * @return void
+ */
 void affichePlaces(int s)
 {
     int nbPlaces = 0;
     char message[100] = "Nombre de places restantes : ";
     char stringPlaces[4];
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 1; i <= 100; i++)
     {
         if (tablePlaces[i].disponible == 1)
             nbPlaces++;
@@ -216,5 +220,32 @@ void affichePlaces(int s)
     sprintf(stringPlaces, "%d", nbPlaces);
     strcat(message, stringPlaces);
 
-    write(s, message, 50);
+    write(s, message, strlen(message));
+}
+
+/**
+ * @brief Décremente le nombre de place
+ * @return void
+ */
+void prendUnePlace(int s)
+{
+    int i;
+    char message[100] = "Vous avez la place n°";
+    char stringPlaces[4];
+    for (i = 1; i <= 100; i++)
+    {
+        if (tablePlaces[i].disponible == 1)
+        {
+            tablePlaces[i].disponible = 0;
+            break;
+        }
+    }
+    if (tablePlaces[100].disponible == 0)
+        write(s, "Désolé, il n'y a plus de places disponibles..\n", 50);
+    else
+    {
+        sprintf(stringPlaces, "%d", i);
+        strcat(message, stringPlaces);
+        write(s, message, strlen(message));
+    }
 }
