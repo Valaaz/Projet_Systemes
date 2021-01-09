@@ -26,8 +26,8 @@ int main()
     int res;
     char nom[] = "c1";
     char tampon[100];
+    char buffer[256];
     char integer[4];
-    char nbPlaces[4];
 
     struct sockaddr_in coordonneesServeur;
 
@@ -70,21 +70,19 @@ int main()
         }
         */
 
-        int nbRecu = recv(fdSocket, nbPlaces, 100, 0);
+        int nbRecu = recv(fdSocket, buffer, 256, 0);
         if (nbRecu > 0)
         {
-            nbPlaces[nbRecu] = 0;
-            printf("%s\n", nbPlaces);
+            buffer[nbRecu] = 0;
+            printf("%s\n", buffer);
+            fflush(stdout);
         }
 
         printf("Choix :\n");
         do
         {
-            //fgets(choix, 10, stdin);
-            //scanf("%s", &choix);
             readC(choix, 10);
             res = atoi(choix);
-            //res = (int)strtol(choix, NULL, 10);
             if (res < 1 || res > 4)
                 printf("Veuillez choisir un chiffre entre 1 et 4\n");
         } while (res < 1 || res > 4);
@@ -180,7 +178,6 @@ void choixAction()
 /**
  * @brief Déconnecte le client du serveur
  * @return void
- */
 void deconnexion()
 {
     int choix;
@@ -199,22 +196,11 @@ void deconnexion()
     else
         printf("Vous restez encore un peu avec nous alors :)\n");
 }
-
-/**
- * @brief Affiche le nombre de place
- * @return void
  */
-void affichePlace(int *places)
-{
-    //printf("Adresse : %ls\n", pointeur);
-    //printf("Il reste %d places\n", *pointeur);
-    printf("Il reste %d places\n", *places);
-}
 
 /**
  * @brief Décremente le nombre de place
  * @return void
- */
 void prendUnePlace(int *places)
 {
     if (*places == 0)
@@ -225,11 +211,11 @@ void prendUnePlace(int *places)
         affichePlace(places);
     }
 }
+ */
 
 /**
  * @brief Incrémente le nombre de place
  * @return void
- */
 void annuleUnePlace(int *places)
 {
     int choix;
@@ -249,3 +235,4 @@ void annuleUnePlace(int *places)
     else
         printf("Vous gardez votre place\n");
 }
+ */

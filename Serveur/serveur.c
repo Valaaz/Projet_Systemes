@@ -24,11 +24,26 @@ typedef struct
     char nom[3];
 } Com;
 
+typedef struct
+{
+    char *numDossier;
+    int disponible;
+} Place;
+
+Place tablePlaces[100];
+
 void *connexion(void *arg);
 void choixAction();
+void affichePlaces(int s);
 
 int main()
 {
+    for (int i = 0; i < 100; i++)
+    {
+        tablePlaces[i].numDossier = NULL;
+        tablePlaces[i].disponible = 1;
+    }
+
     sprintf(place, "%d", places);
     Com donnees;
     int fdSocketAttente;
@@ -112,7 +127,7 @@ void *connexion(void *arg)
     {
         //write(structure->fdSocketCommunication, "Début", 7);
 
-        write(structure->fdSocketCommunication, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nQuitter (4)\n", 99);
+        write(structure->fdSocketCommunication, "\nQue voulez-vous faire ?\nConsulter les places disponibles (1)\nRéserver une place (2)\nAnnuler une place(3)\nQuitter (4)\n", 200);
 
         int nbRecu = recv(structure->fdSocketCommunication, tampon, 100, 0);
         //recv(structure->fdSocketCommunication, tampon, 99, 0);
@@ -162,8 +177,7 @@ void choixAction(int s, int choix)
     switch (choix)
     {
     case 1:
-        //affichePlace(&x);
-        write(s, "Cas 1", 6);
+        affichePlaces(s);
         break;
 
     case 2:
@@ -185,4 +199,22 @@ void choixAction(int s, int choix)
         printf("Veuillez choisir un chiffre entre 1 et 4\n");
         break;
     }
+}
+
+void affichePlaces(int s)
+{
+    int nbPlaces = 0;
+    char message[100] = "Nombre de places restantes : ";
+    char stringPlaces[4];
+
+    for (int i = 0; i < 100; i++)
+    {
+        if (tablePlaces[i].disponible == 1)
+            nbPlaces++;
+    }
+
+    sprintf(stringPlaces, "%d", nbPlaces);
+    strcat(message, stringPlaces);
+
+    write(s, message, 50);
 }
