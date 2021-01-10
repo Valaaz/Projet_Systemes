@@ -131,14 +131,6 @@ void *connexion(void *arg)
 
     while (boucle == 1)
     {
-        /*int nbPlaces = 0;
-        char message[100] = "Nombre de places restantes : ";
-        char stringPlaces[4];
-
-        int i;
-        char msg[100] = "Vous avez la place n°";
-        char stringPlc[4];*/
-
         int nbRecu = recv(structure->fdSocketCommunication, buffer, 256, 0);
 
         if (nbRecu > 0)
@@ -146,50 +138,14 @@ void *connexion(void *arg)
             buffer[nbRecu] = 0;
             printf("Recu: %s\n", buffer);
             int choix = atoi(buffer);
-            //fflush(stdout);
 
             switch (choix)
             {
-            case 1:
-
-                /*for (int i = 1; i <= 100; i++)
-                {
-                    if (tablePlaces[i].disponible == 1)
-                        nbPlaces++;
-                }
-
-                sprintf(stringPlaces, "%d", nbPlaces);
-                strcat(message, stringPlaces);
-
-                write(structure->fdSocketCommunication, message, strlen(message));*/
+            case 1 :
                 affichePlaces(structure->fdSocketCommunication); 
                 break;
 
             case 2:
-                /*recv(structure->fdSocketCommunication, buffer, 256, 0);
-                printf("Buffer : %s\n", buffer);
-
-                for (i = 1; i <= 100; i++)
-                {
-                    if (tablePlaces[i].disponible == 1)
-                    {
-                        tablePlaces[i].disponible = 0;
-                        tablePlaces[i].nom = buffer;
-
-                        break;
-                    }
-                }
-                if (tablePlaces[100].disponible == 0)
-                    write(structure->fdSocketCommunication, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
-                else
-                {
-                    /*
-                    sprintf(stringPlc, "%d", i);
-                    strcat(msg, stringPlc);
-                    write(structure->fdSocketCommunication, msg, strlen(msg));
-                    *//*
-                    printf("Nom de la place n°%d: %s\n", i, tablePlaces[i].nom);
-                }*/
                 prendUnePlace(structure->fdSocketCommunication); 
                 break;
 
@@ -237,33 +193,6 @@ void affichePlaces(int s) {
 void prendUnePlace(int s)
 {
     //pthread_mutex_lock(&mutex);
-
-
-    
-    /*
-    for (i = 1; i <= 100; i++)
-    {
-        if (tablePlaces[i].disponible == 1)
-        {
-            tablePlaces[i].disponible = 0;
-            break;
-        }
-    }
-    if (tablePlaces[100].disponible == 0)
-        write(s, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
-    else
-    {
-        sprintf(stringPlaces, "%d", i);
-        strcat(message, stringPlaces);
-        write(s, message, strlen(message));
-    }
-    */
-
-    //pthread_mutex_unlock(&mutex);
-    /*
-    int i;
-    char msg[100] = "Vous avez la place n°";
-    char stringPlc[4];*/
 
     int i;
     char message[63] = "Merci pour votre réservation, votre numéro de dossier est : ";

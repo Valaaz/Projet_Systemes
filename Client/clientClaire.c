@@ -114,8 +114,7 @@ void prendUnePlace(int s)
 {
     char nom[50];
     char prenom[50];
-    // char buffer[256];
-    // char num[10]; 
+  
     printf("Saissisez votre nom : \n");
     scanf("%s", nom);
     printf("nom : %s\n", nom);
