@@ -153,10 +153,6 @@ void *connexion(void *arg)
                 annulePlace(structure->fdSocketCommunication);
                 break;
 
-            case 4:
-                write(structure->fdSocketCommunication, "Vous restez encore un peu avec nous alors :)", strlen("Vous restez encore un peu avec nous alors :)"));
-                break;
-
             default:
                 break;
             }
@@ -219,9 +215,10 @@ void prendUnePlace(int s)
             sprintf(num, "%d", n);
 
             tablePlaces[i].disponible = 0;
-            tablePlaces[i].nom = nomClient;
-            tablePlaces[i].prenom = prenomClient;
+            tablePlaces[i].nom = strdup(nomClient);
+            tablePlaces[i].prenom = strdup(prenomClient);
             tablePlaces[i].numDossier = num;
+            printf("Nom client[%d] : %s\n", i, nomClient);
 
             break;
         }
@@ -233,16 +230,34 @@ void prendUnePlace(int s)
 
 void annulePlace(int s)
 {
-    char num[10];
-    recv(s, num, 10, 0);
-    for (int i = 1; i < 100; i++)
+    char nom[50];
+    int Recu = recv(s, nom, 50, 0);
+    printf("ok %d, value : %s\n", Recu, nom);
+    for (int i = 1; i <= 100; i++)
     {
-        if (strcmp(tablePlaces[i].numDossier, num))
+        printf("TableNom[%i] : %s\n", i, tablePlaces[i].nom);
+
+        if (strcmp(tablePlaces[i].nom, nom) == 0)
         {
             tablePlaces[i].disponible = 1;
+            tablePlaces[i].nom = NULL;
+            tablePlaces[i].prenom = NULL;
+            tablePlaces[i].numDossier = NULL;
             write(s, "Place annulée avec succès", 28);
+            break;
         }
         else
-            write(s, "Ce numéro de dossier n'existe pas", 35);
+            write(s, "Ce nom n'existe pas", 35);
     }
+}
+
+/**
+ * @brief Déconnecte le client du serveur
+ * @return void
+ */
+void deconnexion(int s)
+{
+    write(s, "Déconnexion..", strlen("Déconnexion.."));
+    //shutdown(s, SHUT_RDWR);
+    //send(s, "0", strlen("0"), 0);
 }

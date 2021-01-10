@@ -28,12 +28,16 @@ typedef struct
 {
     char *numDossier;
     char *nom;
+    char *prenom;
     int disponible;
 } Place;
 
 Place tablePlaces[100];
 
 void *connexion(void *arg);
+void affichePlaces(int s);
+void prendUnePlace(int s);
+void annulePlace(int s);
 void deconnexion(int s);
 
 int main()
@@ -42,6 +46,7 @@ int main()
     {
         tablePlaces[i].numDossier = NULL;
         tablePlaces[i].nom = NULL;
+        tablePlaces[i].prenom = NULL;
         tablePlaces[i].disponible = 1;
     }
 
@@ -126,14 +131,6 @@ void *connexion(void *arg)
 
     while (boucle == 1)
     {
-        int nbPlaces = 0;
-        char message[100] = "Nombre de places restantes : ";
-        char stringPlaces[4];
-
-        int i;
-        char msg[100] = "Vous avez la place n°";
-        char stringPlc[4];
-
         int nbRecu = recv(structure->fdSocketCommunication, buffer, 256, 0);
 
         if (nbRecu > 0)
@@ -141,49 +138,23 @@ void *connexion(void *arg)
             buffer[nbRecu] = 0;
             printf("Recu: %s\n", buffer);
             int choix = atoi(buffer);
-            //fflush(stdout);
 
             switch (choix)
             {
             case 1:
-
-                for (int i = 1; i <= 100; i++)
-                {
-                    if (tablePlaces[i].disponible == 1)
-                        nbPlaces++;
-                }
-
-                sprintf(stringPlaces, "%d", nbPlaces);
-                strcat(message, stringPlaces);
-
-                write(structure->fdSocketCommunication, message, strlen(message));
+                affichePlaces(structure->fdSocketCommunication);
                 break;
 
             case 2:
-                recv(structure->fdSocketCommunication, buffer, 256, 0);
-                printf("Buffer : %s\n", buffer);
+                prendUnePlace(structure->fdSocketCommunication);
+                break;
 
-                for (i = 1; i <= 100; i++)
-                {
-                    if (tablePlaces[i].disponible == 1)
-                    {
-                        tablePlaces[i].disponible = 0;
-                        tablePlaces[i].nom = buffer;
+            case 3:
+                annulePlace(structure->fdSocketCommunication);
+                break;
 
-                        break;
-                    }
-                }
-                if (tablePlaces[100].disponible == 0)
-                    write(structure->fdSocketCommunication, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
-                else
-                {
-                    /*
-                    sprintf(stringPlc, "%d", i);
-                    strcat(msg, stringPlc);
-                    write(structure->fdSocketCommunication, msg, strlen(msg));
-                    */
-                    printf("Nom de la place n°%d: %s\n", i, tablePlaces[i].nom);
-                }
+            case 4:
+                write(structure->fdSocketCommunication, "Vous restez encore un peu avec nous alors :)", strlen("Vous restez encore un peu avec nous alors :)"));
                 break;
 
             default:
@@ -200,6 +171,25 @@ void *connexion(void *arg)
     printf("Fin du client n°%s\nAttente de connexion\n", nom);
 }
 
+void affichePlaces(int s)
+{
+
+    int nbPlaces = 0;
+    char message[100] = "Nombre de places restantes : ";
+    char stringPlaces[4];
+
+    for (int i = 1; i <= 100; i++)
+    {
+        if (tablePlaces[i].disponible == 1)
+            nbPlaces++;
+    }
+
+    sprintf(stringPlaces, "%d", nbPlaces);
+    strcat(message, stringPlaces);
+
+    write(s, message, strlen(message));
+}
+
 /**
  * @brief Décremente le nombre de place
  * @return void
@@ -209,45 +199,50 @@ void prendUnePlace(int s)
     //pthread_mutex_lock(&mutex);
 
     int i;
-    char message[100] = "Vous avez la place n°";
-    char stringPlaces[4];
-    char nomClient[256];
+    char message[63] = "Merci pour votre réservation, votre numéro de dossier est : ";
+    char nomClient[50];
+    char prenomClient[50];
+    char num[10];
 
-    write(s, "Quel est votre nom ?", strlen("Quel est votre nom ?"));
+    int Recu = recv(s, nomClient, 50, 0);
+    printf("ok %d, value : %s\n", Recu, nomClient);
+    int Recu2 = recv(s, prenomClient, 50, 0);
+    printf("ok %d, value : %s\n", Recu2, prenomClient);
     fflush(stdout);
-    recv(s, nomClient, 256, 0);
-    write(s, nomClient, strlen("nomClient"));
-    fflush(stdout);
+    printf("ok");
 
-    /*
-    for (i = 1; i <= 100; i++)
+    for (int i = 1; i < 100; i++)
     {
         if (tablePlaces[i].disponible == 1)
         {
+            int n = rand() % 1000000000;
+            sprintf(num, "%d", n);
+
             tablePlaces[i].disponible = 0;
+            tablePlaces[i].nom = nomClient;
+            tablePlaces[i].prenom = prenomClient;
+            tablePlaces[i].numDossier = num;
+
             break;
         }
     }
-    if (tablePlaces[100].disponible == 0)
-        write(s, "Désolé, il n'y a plus de places disponibles..\n", strlen("Désolé, il n'y a plus de places disponibles..\n"));
-    else
-    {
-        sprintf(stringPlaces, "%d", i);
-        strcat(message, stringPlaces);
-        write(s, message, strlen(message));
-    }
-    */
 
-    //pthread_mutex_unlock(&mutex);
+    strcat(message, num);
+    write(s, message, strlen(message));
 }
 
-/**
- * @brief Déconnecte le client du serveur
- * @return void
- */
-void deconnexion(int s)
+void annulePlace(int s)
 {
-    write(s, "Déconnexion..", strlen("Déconnexion.."));
-    //shutdown(s, SHUT_RDWR);
-    //send(s, "0", strlen("0"), 0);
+    char num[10];
+    recv(s, num, 10, 0);
+    for (int i = 1; i < 100; i++)
+    {
+        if (strcmp(tablePlaces[i].numDossier, num))
+        {
+            tablePlaces[i].disponible = 1;
+            write(s, "Place annulée avec succès", 28);
+        }
+        else
+            write(s, "Ce numéro de dossier n'existe pas", 35);
+    }
 }

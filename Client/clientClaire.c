@@ -85,7 +85,7 @@ int main()
             break;
 
         case 4:
-            deconnexion(fdSocket);
+            //deconnexion();
             break;
 
         default:
@@ -115,11 +115,11 @@ void prendUnePlace(int s)
     char nom[50];
     char prenom[50];
 
-    printf("Saissisez votre nom : \n");
+    printf("Saississez votre nom : \n");
     scanf("%s", nom);
     printf("nom : %s\n", nom);
     send(s, nom, strlen(nom) + 1, 0);
-    printf("Saissisez votre prénom : \n");
+    printf("Saississez votre prénom : \n");
     scanf("%s", prenom);
     printf("prenom : %s\n", prenom);
     send(s, prenom, strlen(prenom) + 1, 0);
@@ -127,59 +127,12 @@ void prendUnePlace(int s)
 
 void annulePlace(int s)
 {
-    char num[10];
-    printf("Saissisez votre n° de dossier : \n");
+    char num[50];
+    int numDossier;
+    printf("Saississez votre nom : \n");
     scanf("%s", num);
     send(s, num, strlen(num) + 1, 0);
 }
-
-/**
- * @brief Déconnecte le client du serveur
- * @return void
- */
-void deconnexion(int s)
-{
-    char choix[10];
-    int res;
-    printf("Voulez-vous vraiment vous déconnecter ?\nOui (1) || Non (0)\n");
-    do
-    {
-        readC(choix, 10);
-        res = atoi(choix);
-        if (res < 0 || res > 1)
-            printf("Veuillez choisir un chiffre entre 0 et 1\n");
-    } while (res < 0 || res > 1);
-    if (res == 1)
-    {
-        quitter = 0;
-        printf("Déconnexion\n");
-        close(s);
-    }
-}
-
-/**
- * @brief Incrémente le nombre de place
- * @return void
-void annuleUnePlace(int *places)
-{
-    int choix;
-    printf("Voulez-vous vraiment annuler votre place ?\nOui (1) || Non (0)\n");
-    while (choix < 0 || choix > 1)
-    {
-        scanf("%d", &choix);
-        if (choix < 0 || choix > 1)
-            printf("Veuillez entrer un chiffre entre 0 et 1\n");
-    }
-    if (choix == 1)
-    {
-        *places += 1;
-        printf("Place annulée\n");
-        affichePlace(places);
-    }
-    else
-        printf("Vous gardez votre place\n");
-}
- */
 
 // Les 2 fonctions suivantes ont été repris du projet C du premier semestre 2019
 /**
@@ -216,3 +169,50 @@ int readC(char *chaine, int longueur)
         return EXIT_FAILURE;
     }
 }
+
+/**
+ * @brief Déconnecte le client du serveur
+ * @return void
+void deconnexion()
+{
+    int choix;
+    printf("Voulez-vous vraiment vous déconnecter ?\nOui (1) || Non (0)\n");
+    while (choix < 0 || choix > 1)
+    {
+        scanf("%d", &choix);
+        if (choix < 0 || choix > 1)
+            printf("Veuillez entrer un chiffre entre 0 et 1\n");
+    }
+    if (choix == 1)
+    {
+        quitter = 0;
+        printf("Déconnexion\n");
+    }
+    else
+        printf("Vous restez encore un peu avec nous alors :)\n");
+}
+ */
+
+/**
+ * @brief Incrémente le nombre de place
+ * @return void
+void annuleUnePlace(int *places)
+{
+    int choix;
+    printf("Voulez-vous vraiment annuler votre place ?\nOui (1) || Non (0)\n");
+    while (choix < 0 || choix > 1)
+    {
+        scanf("%d", &choix);
+        if (choix < 0 || choix > 1)
+            printf("Veuillez entrer un chiffre entre 0 et 1\n");
+    }
+    if (choix == 1)
+    {
+        *places += 1;
+        printf("Place annulée\n");
+        affichePlace(places);
+    }
+    else
+        printf("Vous gardez votre place\n");
+}
+ */
