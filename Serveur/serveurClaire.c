@@ -7,6 +7,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <time.h>
 
 //#include "../Concert/concert.c"
 
@@ -196,13 +197,27 @@ void affichePlaces(int s)
  */
 void prendUnePlace(int s)
 {
+    /*char places[256]; 
+    int j=0; 
+    while (j<100) {
+        if (tablePlaces[j].disponible==1){  
+            char p;
+            strcat(places, j); 
+        }
+        else 
+            j++;
+    }
+
+    write (s, "Voici les places disponibles : ", 32); 
+    write (s, places, strlen(places)); */
     //pthread_mutex_lock(&mutex);
 
     int i;
     char message[63] = "Merci pour votre réservation, votre numéro de dossier est : ";
     char nomClient[50];
     char prenomClient[50];
-    char num[10];
+    char num[50];
+    char places[256]; 
 
     int Recu = recv(s, nomClient, 50, 0);
     printf("ok %d, value : %s\n", Recu, nomClient);
@@ -211,12 +226,19 @@ void prendUnePlace(int s)
     fflush(stdout);
     printf("ok");
 
+
+    
+
     for (int i = 0; i < 100; i++)
     {
+
         if (tablePlaces[i].disponible == 1)
         {
-            int n = rand() % 1000000000;
-            sprintf(num, "%d", n);
+            int n=0;
+            while (n < 10) {
+                num[n] = '0'+(rand()%10);
+                n++;
+            }
 
             tablePlaces[i].disponible = 0;
             tablePlaces[i].nom = strdup(nomClient);
@@ -229,7 +251,7 @@ void prendUnePlace(int s)
     }
 
     strcat(message, num);
-    write(s, message, strlen(message));
+    write(s, message, strlen(message));*/
 }
 
 void annulePlace(int s)
