@@ -28,16 +28,16 @@ typedef struct
 {
     char *numDossier;
     char *nom;
-    char *prenom; 
+    char *prenom;
     int disponible;
 } Place;
 
 Place tablePlaces[100];
 
 void *connexion(void *arg);
-void affichePlaces(int s); 
-void prendUnePlace(int s); 
-void annulePlace (int s); 
+void affichePlaces(int s);
+void prendUnePlace(int s);
+void annulePlace(int s);
 void deconnexion(int s);
 
 int main()
@@ -141,17 +141,21 @@ void *connexion(void *arg)
 
             switch (choix)
             {
-            case 1 :
-                affichePlaces(structure->fdSocketCommunication); 
+            case 1:
+                affichePlaces(structure->fdSocketCommunication);
                 break;
 
             case 2:
-                prendUnePlace(structure->fdSocketCommunication); 
+                prendUnePlace(structure->fdSocketCommunication);
                 break;
 
-            case 3 : 
-                annulePlace(structure->fdSocketCommunication); 
-                break; 
+            case 3:
+                annulePlace(structure->fdSocketCommunication);
+                break;
+
+            case 4:
+                write(structure->fdSocketCommunication, "Vous restez encore un peu avec nous alors :)", strlen("Vous restez encore un peu avec nous alors :)"));
+                break;
 
             default:
                 break;
@@ -167,24 +171,24 @@ void *connexion(void *arg)
     printf("Fin du client n°%s\nAttente de connexion\n", nom);
 }
 
-void affichePlaces(int s) {
+void affichePlaces(int s)
+{
 
     int nbPlaces = 0;
     char message[100] = "Nombre de places restantes : ";
     char stringPlaces[4];
 
     for (int i = 1; i <= 100; i++)
-        {
-            if (tablePlaces[i].disponible == 1)
-                nbPlaces++;
-        }
+    {
+        if (tablePlaces[i].disponible == 1)
+            nbPlaces++;
+    }
 
     sprintf(stringPlaces, "%d", nbPlaces);
     strcat(message, stringPlaces);
 
     write(s, message, strlen(message));
 }
-
 
 /**
  * @brief Décremente le nombre de place
@@ -197,56 +201,48 @@ void prendUnePlace(int s)
     int i;
     char message[63] = "Merci pour votre réservation, votre numéro de dossier est : ";
     char nomClient[50];
-    char prenomClient[50]; 
-    char num[10]; 
+    char prenomClient[50];
+    char num[10];
 
-    int Recu = recv(s, nomClient, 50, 0); 
-    printf("ok %d, value : %s\n", Recu, nomClient); 
+    int Recu = recv(s, nomClient, 50, 0);
+    printf("ok %d, value : %s\n", Recu, nomClient);
     int Recu2 = recv(s, prenomClient, 50, 0);
-    printf("ok %d, value : %s\n", Recu2, prenomClient); 
-    fflush(stdout); 
-    printf("ok"); 
-    
-    for (int i=1; i<100; i++){
-        if (tablePlaces[i].disponible==1){
-            int n = rand() % 1000000000; 
+    printf("ok %d, value : %s\n", Recu2, prenomClient);
+    fflush(stdout);
+    printf("ok");
+
+    for (int i = 1; i < 100; i++)
+    {
+        if (tablePlaces[i].disponible == 1)
+        {
+            int n = rand() % 1000000000;
             sprintf(num, "%d", n);
 
-            tablePlaces[i].disponible=0; 
-            tablePlaces[i].nom=nomClient; 
-            tablePlaces[i].prenom=prenomClient; 
-            tablePlaces[i].numDossier=num; 
+            tablePlaces[i].disponible = 0;
+            tablePlaces[i].nom = nomClient;
+            tablePlaces[i].prenom = prenomClient;
+            tablePlaces[i].numDossier = num;
 
-            break; 
+            break;
         }
     }
 
-    strcat(message, num); 
+    strcat(message, num);
     write(s, message, strlen(message));
-
-
-
 }
 
-void annulePlace (int s) {
-    char num[10]; 
-    recv(s, num, 10, 0); 
-    for (int i=1; i<100; i++) {
-        if(strcmp(tablePlaces[i].numDossier, num)){
-            tablePlaces[i].disponible=1; 
-            write(s, "place annulée avec succès", 28); 
-        }
-        else write(s, "ce numéro de dossier n'existe pas", 35); 
-    }
-}
-
-/**
- * @brief Déconnecte le client du serveur
- * @return void
- */
-void deconnexion(int s)
+void annulePlace(int s)
 {
-    write(s, "Déconnexion..", strlen("Déconnexion.."));
-    //shutdown(s, SHUT_RDWR);
-    //send(s, "0", strlen("0"), 0);
+    char num[10];
+    recv(s, num, 10, 0);
+    for (int i = 1; i < 100; i++)
+    {
+        if (strcmp(tablePlaces[i].numDossier, num))
+        {
+            tablePlaces[i].disponible = 1;
+            write(s, "Place annulée avec succès", 28);
+        }
+        else
+            write(s, "Ce numéro de dossier n'existe pas", 35);
+    }
 }
