@@ -221,7 +221,7 @@ void prendUnePlace(int s)
             tablePlaces[i].disponible = 0;
             tablePlaces[i].nom = strdup(nomClient);
             tablePlaces[i].prenom = strdup(prenomClient);
-            tablePlaces[i].numDossier = num;
+            tablePlaces[i].numDossier = strdup(num);
             printf("Nom client[%d] : %s\n", i, nomClient);
 
             break;
@@ -245,10 +245,10 @@ void annulePlace(int s)
 
     for (int i = 0; i < 100; i++)
     {
-        printf("%s", tablePlaces[i].nom);
-        //if ((strcmp(tablePlaces[i].nom, nom) == 0) && (strcmp((tablePlaces[i].numDossier, num) == 0)))
-        if (strcmp(tablePlaces[i].nom, nom) == 0)
-        {
+        printf("%s", tablePlaces[i].numDossier);
+        
+        if ((strcmp(tablePlaces[i].nom, nom) == 0) && (strcmp(tablePlaces[i].numDossier, num) == 0))
+       {
             tablePlaces[i].disponible = 1;
             tablePlaces[i].nom = "";
             tablePlaces[i].prenom = "";
@@ -261,25 +261,6 @@ void annulePlace(int s)
 
     if (annule == 0)
     {
-        write(s, "inexistant", 28);
+        write(s, "Ce n° de dossier ou ce nom n'est affecté à aucune place", 59);
     }
-    /*
-    int annule = 0; 
-    int i=0; 
-    while (i < 100) {
-        if (strcmp(tablePlaces[i].nom, nom) == 0) {
-            tablePlaces[i].disponible = 1;
-            tablePlaces[i].nom = NULL;
-            tablePlaces[i].prenom = NULL;
-            tablePlaces[i].numDossier = NULL;
-            write(s, "Place annulée avec succès", 28);
-            annule=1; 
-            break;
-        }
-        else i++; 
-    }
-
-    if (annule!=1) {
-        write(s,"Aucune place n'est associé à ce nom ou ce numéro de dossier",256); 
-    }*/
 }
