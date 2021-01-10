@@ -14,7 +14,7 @@
 
 //pthread_mutex_t mutex;
 
-int places = 3;
+int places = 100;
 char place[4];
 
 typedef struct
@@ -42,11 +42,11 @@ void deconnexion(int s);
 
 int main()
 {
-    for (int i = 0; i <= 3; i++)
+    for (int i = 0; i < 100; i++)
     {
-        tablePlaces[i].numDossier = NULL;
-        tablePlaces[i].nom = NULL;
-        tablePlaces[i].prenom = NULL;
+        tablePlaces[i].numDossier = "";
+        tablePlaces[i].nom = "";
+        tablePlaces[i].prenom = "";
         tablePlaces[i].disponible = 1;
     }
 
@@ -178,7 +178,7 @@ void affichePlaces(int s)
     char message[100] = "Nombre de places restantes : ";
     char stringPlaces[4];
 
-    for (int i = 0; i <= 3; i++)
+    for (int i = 0; i < 100; i++)
     {
         if (tablePlaces[i].disponible == 1)
             nbPlaces++;
@@ -211,7 +211,7 @@ void prendUnePlace(int s)
     fflush(stdout);
     printf("ok");
 
-    for (int i = 1; i < 100; i++)
+    for (int i = 0; i < 100; i++)
     {
         if (tablePlaces[i].disponible == 1)
         {
@@ -235,33 +235,51 @@ void prendUnePlace(int s)
 void annulePlace(int s)
 {
     char nom[50];
+    char num[50];
     int Recu = recv(s, nom, 50, 0);
     printf("ok %d, value : %s\n", Recu, nom);
-    for (int i = 0; i <= 3; i++)
-    {
-        printf("TableNom[%i] : %s\n", i, tablePlaces[i].nom);
+    int Recu2 = recv(s, num, 50, 0);
+    printf("ok %d, value : %s\n", Recu2, num);
 
+    int annule = 0;
+
+    for (int i = 0; i < 100; i++)
+    {
+        printf("%s", tablePlaces[i].nom);
+        //if ((strcmp(tablePlaces[i].nom, nom) == 0) && (strcmp((tablePlaces[i].numDossier, num) == 0)))
         if (strcmp(tablePlaces[i].nom, nom) == 0)
         {
+            tablePlaces[i].disponible = 1;
+            tablePlaces[i].nom = "";
+            tablePlaces[i].prenom = "";
+            tablePlaces[i].numDossier = "";
+            write(s, "Place annulée avec succès", 28);
+            annule = 1;
+            break;
+        }
+    }
+
+    if (annule == 0)
+    {
+        write(s, "inexistant", 28);
+    }
+    /*
+    int annule = 0; 
+    int i=0; 
+    while (i < 100) {
+        if (strcmp(tablePlaces[i].nom, nom) == 0) {
             tablePlaces[i].disponible = 1;
             tablePlaces[i].nom = NULL;
             tablePlaces[i].prenom = NULL;
             tablePlaces[i].numDossier = NULL;
             write(s, "Place annulée avec succès", 28);
+            annule=1; 
             break;
         }
-        else
-            write(s, "Ce nom n'existe pas", 35);
+        else i++; 
     }
-}
 
-/**
- * @brief Déconnecte le client du serveur
- * @return void
- */
-void deconnexion(int s)
-{
-    write(s, "Déconnexion..", strlen("Déconnexion.."));
-    //shutdown(s, SHUT_RDWR);
-    //send(s, "0", strlen("0"), 0);
+    if (annule!=1) {
+        write(s,"Aucune place n'est associé à ce nom ou ce numéro de dossier",256); 
+    }*/
 }
