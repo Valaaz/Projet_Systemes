@@ -85,7 +85,7 @@ int main()
             break;
 
         case 4:
-            //deconnexion();
+            deconnexion();
             break;
 
         default:
@@ -173,25 +173,25 @@ int readC(char *chaine, int longueur)
 /**
  * @brief Déconnecte le client du serveur
  * @return void
+ */
 void deconnexion()
 {
-    int choix;
+    char choix[10];
+    int res;
     printf("Voulez-vous vraiment vous déconnecter ?\nOui (1) || Non (0)\n");
-    while (choix < 0 || choix > 1)
+    do
     {
-        scanf("%d", &choix);
-        if (choix < 0 || choix > 1)
-            printf("Veuillez entrer un chiffre entre 0 et 1\n");
-    }
-    if (choix == 1)
+        readC(choix, 10);
+        res = atoi(choix);
+        if (res < 0 || res > 1)
+            printf("Veuillez choisir un chiffre entre 1 et 4\n");
+    } while (res < 0 || res > 1);
+    if (res == 1)
     {
         quitter = 0;
         printf("Déconnexion\n");
     }
-    else
-        printf("Vous restez encore un peu avec nous alors :)\n");
 }
- */
 
 /**
  * @brief Incrémente le nombre de place

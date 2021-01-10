@@ -14,7 +14,7 @@
 
 //pthread_mutex_t mutex;
 
-int places = 100;
+int places = 3;
 char place[4];
 
 typedef struct
@@ -42,7 +42,7 @@ void deconnexion(int s);
 
 int main()
 {
-    for (int i = 1; i <= 100; i++)
+    for (int i = 0; i <= 3; i++)
     {
         tablePlaces[i].numDossier = NULL;
         tablePlaces[i].nom = NULL;
@@ -153,6 +153,10 @@ void *connexion(void *arg)
                 annulePlace(structure->fdSocketCommunication);
                 break;
 
+            case 4:
+                write(structure->fdSocketCommunication, "Vous restez encore un peu avec nous alors :)", strlen("Vous restez encore un peu avec nous alors :)"));
+                break;
+
             default:
                 break;
             }
@@ -174,7 +178,7 @@ void affichePlaces(int s)
     char message[100] = "Nombre de places restantes : ";
     char stringPlaces[4];
 
-    for (int i = 1; i <= 100; i++)
+    for (int i = 0; i <= 3; i++)
     {
         if (tablePlaces[i].disponible == 1)
             nbPlaces++;
@@ -233,7 +237,7 @@ void annulePlace(int s)
     char nom[50];
     int Recu = recv(s, nom, 50, 0);
     printf("ok %d, value : %s\n", Recu, nom);
-    for (int i = 1; i <= 100; i++)
+    for (int i = 0; i <= 3; i++)
     {
         printf("TableNom[%i] : %s\n", i, tablePlaces[i].nom);
 
