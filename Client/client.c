@@ -98,7 +98,6 @@ int main()
             fflush(stdout);
         }
     }
-
     close(fdSocket);
 }
 

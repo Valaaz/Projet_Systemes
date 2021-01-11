@@ -121,7 +121,7 @@ void *connexion(void *arg)
         if (nbRecu > 0)
         {
             buffer[nbRecu] = 0;
-            printf("Recu: %s\n", buffer);
+            printf("\nRecu: %s\n", buffer);
             int choix = atoi(buffer);
 
             switch (choix)
@@ -193,11 +193,8 @@ void prendUnePlace(int s)
     char liste[500] = "";
     char ticket[4];
 
-    int Recu = recv(s, nomClient, 50, 0);
-    printf("ok %d, value : %s\n", Recu, nomClient);
-    int Recu2 = recv(s, prenomClient, 50, 0);
-    printf("ok %d, value : %s\n", Recu2, prenomClient);
-    printf("ok\n");
+    recv(s, nomClient, 50, 0);
+    recv(s, prenomClient, 50, 0);
 
     sem_wait(&semaphore);
     for (int i = 0; i < 100; i++)
@@ -228,7 +225,6 @@ void prendUnePlace(int s)
         if (x < 0)
             x *= -1;
 
-        printf("Num : %d\n", x);
         sprintf(num, "%d", x);
 
         tablePlaces[numPlace].disponible = 0;
@@ -239,6 +235,8 @@ void prendUnePlace(int s)
         strcat(message, num);
         strcat(message, ". Votre place est la n°");
         strcat(message, ticket);
+
+        printf("La place n° %d a été réservé par %s %s, le numéro de dossier est : %s\n", numPlace + 1, nomClient, prenomClient, num);
     }
     sem_post(&semaphore);
 
@@ -249,10 +247,8 @@ void annulePlace(int s)
 {
     char nom[50];
     char num[50];
-    int Recu = recv(s, nom, 50, 0);
-    printf("ok %d, value : %s\n", Recu, nom);
-    int Recu2 = recv(s, num, 50, 0);
-    printf("ok %d, value : %s\n", Recu2, num);
+    recv(s, nom, 50, 0);
+    recv(s, num, 50, 0);
 
     int annule = 0;
 
@@ -265,6 +261,7 @@ void annulePlace(int s)
             tablePlaces[i].disponible = 1;
             write(s, "Place annulée avec succès", 28);
             annule = 1;
+            printf("La place n° %d a bien été annulée.\n", i + 1);
             break;
         }
     }
