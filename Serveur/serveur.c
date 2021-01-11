@@ -178,7 +178,7 @@ void *connexion(void *arg)
     close(structure->fdSocketCommunication);
     // Libération de la mémoire allouée à la structure
     free(structure);
-    printf("\nFin du client\nAttente de connexion\n");
+    printf("\nFin du client\n");
     // Fin du thread actuel
     pthread_exit(NULL);
 }
