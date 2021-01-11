@@ -9,11 +9,7 @@
 #include <pthread.h>
 #include <time.h>
 
-//#include "../Concert/concert.c"
-
 #define PORT 6000
-
-//pthread_mutex_t mutex;
 
 typedef struct
 {
@@ -59,13 +55,6 @@ int main()
         exit(-1);
     }
 
-    /*
-    if (pthread_mutex_init(&mutex, NULL) != 0)
-    {
-        printf("initialisation du mutex echouée\n");
-    }
-    */
-
     // On prépare l’adresse d’attachement locale
     longueurAdresse = sizeof(struct sockaddr_in);
     memset(&coordonneesServeur, 0x00, longueurAdresse);
@@ -105,11 +94,8 @@ int main()
             d->fdSocketCommunication = donnees.fdSocketCommunication;
             pthread_t my_thread;
             int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)d);
-            //pthread_join(my_thread, NULL);
         }
     }
-
-    //pthread_mutex_destroy(&mutex);
 
     close(fdSocketAttente);
 
@@ -193,20 +179,6 @@ void affichePlaces(int s)
  */
 void prendUnePlace(int s)
 {
-    /*char places[256]; 
-    int j=0; 
-    while (j<100) {
-        if (tablePlaces[j].disponible==1){  
-            char p;
-            strcat(places, j); 
-        }
-        else 
-            j++;
-    }
-
-    write (s, "Voici les places disponibles : ", 32); 
-    write (s, places, strlen(places)); */
-    //pthread_mutex_lock(&mutex);
 
     int i;
     char message[500] = "Merci pour votre réservation, votre numéro de dossier est :";

@@ -156,15 +156,15 @@ void deconnexion(int s)
 {
     char choix[10];
     int res;
-    printf("Voulez-vous vraiment vous déconnecter ?\nOui (1) || Non (0)\n");
+    printf("Voulez-vous vraiment vous déconnecter ?\nOui (1) || Non (2)\n");
     do
     {
         readC(choix, 10);
         res = atoi(choix);
-        if (res < 0 || res > 1)
-            printf("Veuillez choisir un chiffre entre 1 et 4\n");
-    } while (res < 0 || res > 1);
-    if (res == 1)
+        if (res < 1 || res > 2)
+            printf("Veuillez choisir un chiffre entre 1 et 2\n");
+    } while (res < 1 || res > 2);
+    if (res)
     {
         quitter = 0;
         printf("Déconnexion\n");
