@@ -114,6 +114,7 @@ void prendUnePlace(int s)
     char prenom[50];
     char place[4];
     char listePlace[500] = "";
+    int res;
 
     printf("Saisissez votre nom : \n");
     scanf("%s", nom);
@@ -130,7 +131,13 @@ void prendUnePlace(int s)
     printf("\n%s\n\n", listePlace);
 
     printf("Saisissez la place désirée : \n");
-    scanf("%s", place);
+    do
+    {
+        readC(place, 10);
+        res = atoi(place);
+        if (res < 1 || res > 100)
+            printf("Veuillez choisir un nombre entre 1 et 100\n");
+    } while (res < 1 || res > 100);
     send(s, place, strlen(place) + 1, 0);
 }
 

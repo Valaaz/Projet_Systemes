@@ -21,9 +21,9 @@ typedef struct
 
 typedef struct
 {
-    char *numDossier;
-    char *nom;
-    char *prenom;
+    char numDossier[11];
+    char nom[50];
+    char prenom[50];
     int disponible;
 } Place;
 
@@ -41,9 +41,9 @@ int main()
     sem_init(&semaphore, PTHREAD_PROCESS_SHARED, 1);
     for (int i = 0; i < 100; i++)
     {
-        tablePlaces[i].numDossier = "";
-        tablePlaces[i].nom = "";
-        tablePlaces[i].prenom = "";
+        strcpy(tablePlaces[i].numDossier, "");
+        strcpy(tablePlaces[i].nom, "");
+        strcpy(tablePlaces[i].prenom, "");
         tablePlaces[i].disponible = 1;
     }
 
@@ -206,7 +206,7 @@ void prendUnePlace(int s)
     {
         if (tablePlaces[i].disponible)
         {
-            sprintf(places, "%d", i);
+            sprintf(places, "%d", 1 + i);
             strcat(places, " | ");
             strcat(liste, places);
         }
@@ -215,56 +215,32 @@ void prendUnePlace(int s)
     send(s, liste, strlen(liste), 0);
 
     int Recu3 = recv(s, ticket, 4, 0);
-    int numPlace = atoi(ticket);
+    int numPlace = atoi(ticket) - 1;
     int x = -1;
 
     sem_wait(&semaphore);
     if (!tablePlaces[numPlace].disponible)
     {
         printf("%s", "cette place est déjà réservée");
-        strcpy(message, "Place déjà réservée");
+        strcpy(message, "Cette place est déjà réservée");
     }
     else
     {
-
         x = 1000000000 + rand() % (9999999999 + 1 - 1000000000);
         if (x < 0)
             x *= -1;
 
         printf("Num : %d\n", x);
-
-        for (int i = 0; i < 100; i++)
-        {
-            if (tablePlaces[numPlace].disponible == 1)
-            {
-                tablePlaces[numPlace].disponible = 0;
-                tablePlaces[numPlace].nom = strdup(nomClient);
-                tablePlaces[numPlace].prenom = strdup(prenomClient);
-                tablePlaces[numPlace].numDossier = strdup(num);
-                printf("\nNom client[%d], place %d : %s\n", i, numPlace, nomClient);
-                /*strcat(message, ". Vous avez réservé la place n°");
-            char pl;
-            sprintf(pl, "%d", numPlace); 
-            strcat(message, pl); */
-                break;
-            }
-            else if (tablePlaces[i].disponible == 1)
-            {
-                tablePlaces[i].disponible = 0;
-                tablePlaces[i].nom = strdup(nomClient);
-                tablePlaces[i].prenom = strdup(prenomClient);
-                tablePlaces[i].numDossier = strdup(num);
-                printf("\nNom client[%d], place %d : %s\n", i, i, nomClient);
-
-                /*strcat(message, ". La place que vous souhaitez n'est pas disponible, nous vous avons attribué la place n°");
-            char pl[5];
-            sprintf(pl, "%d", i); 
-            strcat(message, pl); */
-                break;
-            }
-        }
         sprintf(num, "%d", x);
+
+        tablePlaces[numPlace].disponible = 0;
+        strcpy(tablePlaces[numPlace].nom, nomClient);
+        strcpy(tablePlaces[numPlace].prenom, prenomClient);
+        strcpy(tablePlaces[numPlace].numDossier, num);
+
         strcat(message, num);
+        strcat(message, ". Votre place est la n°");
+        strcat(message, ticket);
     }
     sem_post(&semaphore);
 
@@ -285,14 +261,10 @@ void annulePlace(int s)
     sem_wait(&semaphore);
     for (int i = 0; i < 100; i++)
     {
-        printf("%s", tablePlaces[i].numDossier);
 
         if ((strcmp(tablePlaces[i].nom, nom) == 0) && (strcmp(tablePlaces[i].numDossier, num) == 0))
         {
             tablePlaces[i].disponible = 1;
-            tablePlaces[i].nom = "";
-            tablePlaces[i].prenom = "";
-            tablePlaces[i].numDossier = "";
             write(s, "Place annulée avec succès", 28);
             annule = 1;
             break;
