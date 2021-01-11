@@ -19,7 +19,6 @@ typedef struct
 {
     int fdSocketCommunication;
     struct sockaddr_in coordonneesAppelant;
-    char nom[3];
 } Com;
 
 typedef struct
@@ -100,8 +99,11 @@ int main()
         }
         else
         {
+            Com *d = (Com *)malloc(sizeof(Com));
+            d->coordonneesAppelant=donnees.coordonneesAppelant; 
+            d->fdSocketCommunication=donnees.fdSocketCommunication; 
             pthread_t my_thread;
-            int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)&donnees);
+            int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)d);
             //pthread_join(my_thread, NULL);
         }
     }
@@ -160,7 +162,9 @@ void *connexion(void *arg)
         }
     }
 
+
     close(structure->fdSocketCommunication);
+    free(structure); 
     printf("Fin du client\nAttente de connexion\n");
 }
 
@@ -205,7 +209,7 @@ void prendUnePlace(int s)
     //pthread_mutex_lock(&mutex);
 
     int i;
-    char message[63] = "Merci pour votre réservation, votre numéro de dossier est : ";
+    char message[500]="Merci pour votre réservation, votre numéro de dossier est :";
     char nomClient[50];
     char prenomClient[50];
     char num[50];
@@ -241,6 +245,8 @@ void prendUnePlace(int s)
 
     printf("Num : %d\n", x);
 
+    
+
     for (int i = 0; i < 100; i++)
     {
         if (tablePlaces[numPlace].disponible == 1)
@@ -250,7 +256,10 @@ void prendUnePlace(int s)
             tablePlaces[numPlace].prenom = strdup(prenomClient);
             tablePlaces[numPlace].numDossier = strdup(num);
             printf("\nNom client[%d], place %d : %s\n", i, numPlace, nomClient);
-
+            /*strcat(message, ". Vous avez réservé la place n°");
+            char pl;
+            sprintf(pl, "%d", numPlace); 
+            strcat(message, pl); */
             break;
         }
         else if (tablePlaces[i].disponible == 1)
@@ -260,13 +269,18 @@ void prendUnePlace(int s)
             tablePlaces[i].prenom = strdup(prenomClient);
             tablePlaces[i].numDossier = strdup(num);
             printf("\nNom client[%d], place %d : %s\n", i, i, nomClient);
-
+            
+            /*strcat(message, ". La place que vous souhaitez n'est pas disponible, nous vous avons attribué la place n°");
+            char pl[5];
+            sprintf(pl, "%d", i); 
+            strcat(message, pl); */
             break;
         }
     }
-
+    
     sprintf(num, "%d", x);
     strcat(message, num);
+    
     write(s, message, strlen(message));
 }
 
