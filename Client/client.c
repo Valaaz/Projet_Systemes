@@ -188,7 +188,7 @@ void deconnexion(int s)
         if (res < 1 || res > 2)
             printf("Veuillez choisir un chiffre entre 1 et 2\n");
     } while (res < 1 || res > 2);
-    if (res)
+    if (res == 1)
     {
         // Met quitter à 0 pour quitter la boucle
         quitter = 0;
