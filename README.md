@@ -2,8 +2,8 @@
 An IT project in C with threads, pipes, ...
 
 ## Compilation :
-Pour compiler le serveur, aller d'abord dans le dossier Serveur puis taper la commande ```c gcc -serveur.c -o ./serveur -lpthread``` </br>
-Pour compiler le client, aller d'abord dans le dossier Client puis taper la commande ```c gcc -client.c -o ./client```
+Pour compiler le serveur, aller d'abord dans le dossier Serveur puis taper la commande ```gcc -serveur.c -o serveur -lpthread``` </br>
+Pour compiler le client, aller d'abord dans le dossier Client puis taper la commande ```gcc -client.c -o client```
 
 ## Exécution :
 ⚠ Il vous faut exécuter le serveur avant le(-s) client(-s) </br>
