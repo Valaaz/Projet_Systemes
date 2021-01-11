@@ -23,9 +23,8 @@ int main()
     int longueurAdresse;
     char choix[10];
     int res;
-    //char nom[] = "c1";
     char tampon[100];
-    char buffer[256];
+    char buffer[500];
     char integer[4];
     char nom[256];
 
@@ -53,8 +52,6 @@ int main()
         exit(-1);
     }
     printf("connexion ok\n");
-    send(fdSocket, nom, strlen(nom), 0);
-    printf("Client: %s\n", nom);
     printf("\n-----------Bienvenue-----------\n");
 
     while (quitter != 0)
@@ -76,6 +73,7 @@ int main()
         {
         case 1:
             break;
+
         case 2:
             prendUnePlace(fdSocket);
             break;
@@ -93,7 +91,7 @@ int main()
             break;
         }
 
-        int nbRecu = recv(fdSocket, buffer, 256, 0);
+        int nbRecu = recv(fdSocket, buffer, 500, 0);
 
         if (nbRecu > 0)
         {
@@ -114,15 +112,26 @@ void prendUnePlace(int s)
 {
     char nom[50];
     char prenom[50];
+    char place[4];
+    char listePlace[500] = "";
 
     printf("Saisissez votre nom : \n");
     scanf("%s", nom);
     printf("nom : %s\n", nom);
     send(s, nom, strlen(nom) + 1, 0);
+
     printf("Saisissez votre prénom : \n");
     scanf("%s", prenom);
+
     printf("prenom : %s\n", prenom);
     send(s, prenom, strlen(prenom) + 1, 0);
+
+    recv(s, listePlace, 500, 0);
+    printf("\n%s\n\n", listePlace);
+
+    printf("Saisissez la place désirée : \n");
+    scanf("%s", place);
+    send(s, place, strlen(place) + 1, 0);
 }
 
 void annulePlace(int s)

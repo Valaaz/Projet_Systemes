@@ -15,9 +15,6 @@
 
 //pthread_mutex_t mutex;
 
-int places = 100;
-char place[4];
-
 typedef struct
 {
     int fdSocketCommunication;
@@ -51,7 +48,6 @@ int main()
         tablePlaces[i].disponible = 1;
     }
 
-    sprintf(place, "%d", places);
     Com donnees;
     int fdSocketAttente;
     struct sockaddr_in coordonneesServeur;
@@ -122,13 +118,9 @@ void *connexion(void *arg)
     int boucle = 1;
     Com *structure = (Com *)arg;
     char buffer[256];
-    char nom[10];
     char nbPlaces[4];
 
     printf("Client connecté. IP : %s\n", inet_ntoa(structure->coordonneesAppelant.sin_addr));
-    recv(structure->fdSocketCommunication, nom, 10, 0);
-
-    printf("Client : %s\n", nom);
 
     while (boucle == 1)
     {
@@ -169,7 +161,7 @@ void *connexion(void *arg)
     }
 
     close(structure->fdSocketCommunication);
-    printf("Fin du client n°%s\nAttente de connexion\n", nom);
+    printf("Fin du client\nAttente de connexion\n");
 }
 
 void affichePlaces(int s)
@@ -217,41 +209,65 @@ void prendUnePlace(int s)
     char nomClient[50];
     char prenomClient[50];
     char num[50];
-    char places[256]; 
+    char places[4];
+    char liste[500] = "";
+    char ticket[4];
 
     int Recu = recv(s, nomClient, 50, 0);
     printf("ok %d, value : %s\n", Recu, nomClient);
     int Recu2 = recv(s, prenomClient, 50, 0);
     printf("ok %d, value : %s\n", Recu2, prenomClient);
-    fflush(stdout);
-    printf("ok");
-
-
-    
+    printf("ok\n");
 
     for (int i = 0; i < 100; i++)
     {
-
         if (tablePlaces[i].disponible == 1)
         {
-            int n=0;
-            while (n < 10) {
-                num[n] = '0'+(rand()%10);
-                n++;
-            }
+            sprintf(places, "%d", i);
+            strcat(places, " | ");
+            strcat(liste, places);
+        }
+    }
+    send(s, liste, strlen(liste), 0);
 
+    int Recu3 = recv(s, ticket, 4, 0);
+    int numPlace = atoi(ticket);
+
+    srand(time(NULL));
+
+    int x = 1000000000 + rand() % (9999999999 + 1 - 1000000000);
+    if (x < 0)
+        x *= -1;
+
+    printf("Num : %d\n", x);
+
+    for (int i = 0; i < 100; i++)
+    {
+        if (tablePlaces[numPlace].disponible == 1)
+        {
+            tablePlaces[numPlace].disponible = 0;
+            tablePlaces[numPlace].nom = strdup(nomClient);
+            tablePlaces[numPlace].prenom = strdup(prenomClient);
+            tablePlaces[numPlace].numDossier = strdup(num);
+            printf("\nNom client[%d], place %d : %s\n", i, numPlace, nomClient);
+
+            break;
+        }
+        else if (tablePlaces[i].disponible == 1)
+        {
             tablePlaces[i].disponible = 0;
             tablePlaces[i].nom = strdup(nomClient);
             tablePlaces[i].prenom = strdup(prenomClient);
             tablePlaces[i].numDossier = strdup(num);
-            printf("Nom client[%d] : %s\n", i, nomClient);
+            printf("\nNom client[%d], place %d : %s\n", i, i, nomClient);
 
             break;
         }
     }
 
+    sprintf(num, "%d", x);
     strcat(message, num);
-    write(s, message, strlen(message));*/
+    write(s, message, strlen(message));
 }
 
 void annulePlace(int s)
@@ -268,9 +284,9 @@ void annulePlace(int s)
     for (int i = 0; i < 100; i++)
     {
         printf("%s", tablePlaces[i].numDossier);
-        
+
         if ((strcmp(tablePlaces[i].nom, nom) == 0) && (strcmp(tablePlaces[i].numDossier, num) == 0))
-       {
+        {
             tablePlaces[i].disponible = 1;
             tablePlaces[i].nom = "";
             tablePlaces[i].prenom = "";
