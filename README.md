@@ -1,5 +1,5 @@
 # Projet_Systemes
-An IT project in C with threads, pipes, ...
+Un projet de DUT Informatique avec des sockets, des threads et des sémaphores
 
 ## Compilation :
 Pour compiler le serveur, aller d'abord dans le dossier Serveur puis taper la commande ```gcc -serveur.c -o serveur -lpthread``` </br>
