@@ -101,8 +101,8 @@ int main()
         else
         {
             Com *d = (Com *)malloc(sizeof(Com));
-            d->coordonneesAppelant=donnees.coordonneesAppelant; 
-            d->fdSocketCommunication=donnees.fdSocketCommunication; 
+            d->coordonneesAppelant = donnees.coordonneesAppelant;
+            d->fdSocketCommunication = donnees.fdSocketCommunication;
             pthread_t my_thread;
             int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)d);
             //pthread_join(my_thread, NULL);
@@ -163,9 +163,8 @@ void *connexion(void *arg)
         }
     }
 
-
     close(structure->fdSocketCommunication);
-    free(structure); 
+    free(structure);
     printf("Fin du client\nAttente de connexion\n");
 }
 
@@ -210,10 +209,10 @@ void prendUnePlace(int s)
     //pthread_mutex_lock(&mutex);
 
     int i;
-    char message[500]="Merci pour votre réservation, votre numéro de dossier est :";
+    char message[500] = "Merci pour votre réservation, votre numéro de dossier est :";
     char nomClient[50];
     char prenomClient[50];
-    char num[50];
+    char num[50] = "";
     char places[4];
     char liste[500] = "";
     char ticket[4];
@@ -237,56 +236,56 @@ void prendUnePlace(int s)
 
     int Recu3 = recv(s, ticket, 4, 0);
     int numPlace = atoi(ticket);
+    int x = -1;
 
-    if(!tablePlaces[numPlace].disponible){
-        printf("%s", "cette place est déjà réservée"); 
-        return;
-    }
-
-    
-
-    int x = 1000000000 + rand() % (9999999999 + 1 - 1000000000);
-    if (x < 0)
-        x *= -1;
-
-    printf("Num : %d\n", x);
-
-    
-
-    for (int i = 0; i < 100; i++)
+    if (!tablePlaces[numPlace].disponible)
     {
-        if (tablePlaces[numPlace].disponible == 1)
+        printf("%s", "cette place est déjà réservée");
+        strcpy(message, "Place déjà réservée");
+    }
+    else
+    {
+
+        x = 1000000000 + rand() % (9999999999 + 1 - 1000000000);
+        if (x < 0)
+            x *= -1;
+
+        printf("Num : %d\n", x);
+
+        for (int i = 0; i < 100; i++)
         {
-            tablePlaces[numPlace].disponible = 0;
-            tablePlaces[numPlace].nom = strdup(nomClient);
-            tablePlaces[numPlace].prenom = strdup(prenomClient);
-            tablePlaces[numPlace].numDossier = strdup(num);
-            printf("\nNom client[%d], place %d : %s\n", i, numPlace, nomClient);
-            /*strcat(message, ". Vous avez réservé la place n°");
+            if (tablePlaces[numPlace].disponible == 1)
+            {
+                tablePlaces[numPlace].disponible = 0;
+                tablePlaces[numPlace].nom = strdup(nomClient);
+                tablePlaces[numPlace].prenom = strdup(prenomClient);
+                tablePlaces[numPlace].numDossier = strdup(num);
+                printf("\nNom client[%d], place %d : %s\n", i, numPlace, nomClient);
+                /*strcat(message, ". Vous avez réservé la place n°");
             char pl;
             sprintf(pl, "%d", numPlace); 
             strcat(message, pl); */
-            break;
-        }
-        else if (tablePlaces[i].disponible == 1)
-        {
-            tablePlaces[i].disponible = 0;
-            tablePlaces[i].nom = strdup(nomClient);
-            tablePlaces[i].prenom = strdup(prenomClient);
-            tablePlaces[i].numDossier = strdup(num);
-            printf("\nNom client[%d], place %d : %s\n", i, i, nomClient);
-            
-            /*strcat(message, ". La place que vous souhaitez n'est pas disponible, nous vous avons attribué la place n°");
+                break;
+            }
+            else if (tablePlaces[i].disponible == 1)
+            {
+                tablePlaces[i].disponible = 0;
+                tablePlaces[i].nom = strdup(nomClient);
+                tablePlaces[i].prenom = strdup(prenomClient);
+                tablePlaces[i].numDossier = strdup(num);
+                printf("\nNom client[%d], place %d : %s\n", i, i, nomClient);
+
+                /*strcat(message, ". La place que vous souhaitez n'est pas disponible, nous vous avons attribué la place n°");
             char pl[5];
             sprintf(pl, "%d", i); 
             strcat(message, pl); */
-            break;
+                break;
+            }
         }
+        sprintf(num, "%d", x);
+        strcat(message, num);
     }
-    
-    sprintf(num, "%d", x);
-    strcat(message, num);
-    
+
     write(s, message, strlen(message));
 }
 
