@@ -25,8 +25,6 @@ int main()
     int res;
     char tampon[100];
     char buffer[500];
-    char integer[4];
-    char nom[256];
 
     struct sockaddr_in coordonneesServeur;
 
@@ -145,7 +143,7 @@ void annulePlace(int s)
 {
     char num[50];
     char nom[50];
-    int numDossier;
+
     printf("Merci de saisir votre nom et votre n° de dossier: \n");
     printf("Votre nom :");
     scanf("%s", nom);

@@ -96,7 +96,7 @@ int main()
             d->coordonneesAppelant = donnees.coordonneesAppelant;
             d->fdSocketCommunication = donnees.fdSocketCommunication;
             pthread_t my_thread;
-            int ret1 = pthread_create(&my_thread, NULL, connexion, (void *)d);
+            pthread_create(&my_thread, NULL, connexion, (void *)d);
         }
     }
 
@@ -111,7 +111,6 @@ void *connexion(void *arg)
     int boucle = 1;
     Com *structure = (Com *)arg;
     char buffer[256];
-    char nbPlaces[4];
 
     printf("Client connecté. IP : %s\n", inet_ntoa(structure->coordonneesAppelant.sin_addr));
 
@@ -156,6 +155,7 @@ void *connexion(void *arg)
     close(structure->fdSocketCommunication);
     free(structure);
     printf("Fin du client\nAttente de connexion\n");
+    pthread_exit(NULL);
 }
 
 void affichePlaces(int s)
@@ -185,8 +185,6 @@ void affichePlaces(int s)
  */
 void prendUnePlace(int s)
 {
-
-    int i;
     char message[500] = "Merci pour votre réservation, votre numéro de dossier est :";
     char nomClient[50];
     char prenomClient[50];
@@ -214,7 +212,7 @@ void prendUnePlace(int s)
     sem_post(&semaphore);
     send(s, liste, strlen(liste), 0);
 
-    int Recu3 = recv(s, ticket, 4, 0);
+    recv(s, ticket, 4, 0);
     int numPlace = atoi(ticket) - 1;
     int x = -1;
 
