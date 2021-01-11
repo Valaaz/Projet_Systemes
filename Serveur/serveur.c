@@ -39,6 +39,7 @@ void deconnexion(int s);
 
 int main()
 {
+    srand(time(NULL));
     for (int i = 0; i < 100; i++)
     {
         tablePlaces[i].numDossier = "";
@@ -225,7 +226,7 @@ void prendUnePlace(int s)
 
     for (int i = 0; i < 100; i++)
     {
-        if (tablePlaces[i].disponible == 1)
+        if (tablePlaces[i].disponible)
         {
             sprintf(places, "%d", i);
             strcat(places, " | ");
@@ -237,7 +238,12 @@ void prendUnePlace(int s)
     int Recu3 = recv(s, ticket, 4, 0);
     int numPlace = atoi(ticket);
 
-    srand(time(NULL));
+    if(!tablePlaces[numPlace].disponible){
+        printf("%s", "cette place est déjà réservée"); 
+        return;
+    }
+
+    
 
     int x = 1000000000 + rand() % (9999999999 + 1 - 1000000000);
     if (x < 0)

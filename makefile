@@ -1,7 +1,3 @@
-all: client server
-
-client:
+all:
 	gcc -g -Wall -o ./Client/client ./Client/client.c
-
-server:
 	gcc -g -Wall -o ./Serveur/serveur ./Serveur/serveur.c -lpthread
