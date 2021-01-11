@@ -8,8 +8,10 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <time.h>
+#include <semaphore.h>
 
 #define PORT 6000
+static sem_t semaphore;
 
 typedef struct
 {
@@ -36,6 +38,7 @@ void deconnexion(int s);
 int main()
 {
     srand(time(NULL));
+    sem_init(&semaphore, PTHREAD_PROCESS_SHARED, 1);
     for (int i = 0; i < 100; i++)
     {
         tablePlaces[i].numDossier = "";
@@ -97,6 +100,7 @@ int main()
         }
     }
 
+    sem_destroy(&semaphore);
     close(fdSocketAttente);
 
     return 0;
@@ -161,11 +165,13 @@ void affichePlaces(int s)
     char message[100] = "Nombre de places restantes : ";
     char stringPlaces[4];
 
+    sem_wait(&semaphore);
     for (int i = 0; i < 100; i++)
     {
         if (tablePlaces[i].disponible == 1)
             nbPlaces++;
     }
+    sem_post(&semaphore);
 
     sprintf(stringPlaces, "%d", nbPlaces);
     strcat(message, stringPlaces);
@@ -195,6 +201,7 @@ void prendUnePlace(int s)
     printf("ok %d, value : %s\n", Recu2, prenomClient);
     printf("ok\n");
 
+    sem_wait(&semaphore);
     for (int i = 0; i < 100; i++)
     {
         if (tablePlaces[i].disponible)
@@ -204,12 +211,14 @@ void prendUnePlace(int s)
             strcat(liste, places);
         }
     }
+    sem_post(&semaphore);
     send(s, liste, strlen(liste), 0);
 
     int Recu3 = recv(s, ticket, 4, 0);
     int numPlace = atoi(ticket);
     int x = -1;
 
+    sem_wait(&semaphore);
     if (!tablePlaces[numPlace].disponible)
     {
         printf("%s", "cette place est déjà réservée");
@@ -257,6 +266,7 @@ void prendUnePlace(int s)
         sprintf(num, "%d", x);
         strcat(message, num);
     }
+    sem_post(&semaphore);
 
     write(s, message, strlen(message));
 }
@@ -272,6 +282,7 @@ void annulePlace(int s)
 
     int annule = 0;
 
+    sem_wait(&semaphore);
     for (int i = 0; i < 100; i++)
     {
         printf("%s", tablePlaces[i].numDossier);
@@ -287,6 +298,7 @@ void annulePlace(int s)
             break;
         }
     }
+    sem_post(&semaphore);
 
     if (annule == 0)
     {
