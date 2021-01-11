@@ -178,7 +178,7 @@ void *connexion(void *arg)
     close(structure->fdSocketCommunication);
     // Libération de la mémoire allouée à la structure
     free(structure);
-    printf("Fin du client\nAttente de connexion\n");
+    printf("\nFin du client\nAttente de connexion\n");
     // Fin du thread actuel
     pthread_exit(NULL);
 }
@@ -254,25 +254,20 @@ void prendUnePlace(int s)
     recv(s, ticket, 4, 0);
     // Conversion du ticket en int avec -1 car notre boucle parcours le tableau de 0 à 99
     int numPlace = atoi(ticket) - 1;
-    int x = -1;
 
     // Début de la zone critique à protéger
     sem_wait(&semaphore);
     // Si la place souhaitée n'est pas disponible on prévient le client
     if (!tablePlaces[numPlace].disponible)
     {
-        printf("%s", "cette place est déjà réservée");
+        printf("%s\n", "Cette place est déjà réservée");
         strcpy(message, "Cette place est déjà réservée");
     }
     else
     {
-        // Génère un nombre aléatoire à 10 chiffres
-        x = 1000000000 + rand() % (9999999999 + 1 - 1000000000);
-        // Si le nombre généré est négatif on le multiplie par -1 pour le rendre positif
-        if (x < 0)
-            x *= -1;
 
-        sprintf(num, "%d", x);
+        for (int i = 0; i < 10; i++)
+            num[i] = '0' + rand() % 10;
 
         // On rend la place indisponible car réservée et on attribut les informations du client aux variables de la structure
         tablePlaces[numPlace].disponible = 0;

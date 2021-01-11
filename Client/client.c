@@ -123,14 +123,12 @@ void prendUnePlace(int s)
 
     printf("Saisissez votre nom : \n");
     scanf("%s", nom);
-    printf("nom : %s\n", nom);
     // Envoi du nom
     send(s, nom, strlen(nom) + 1, 0);
 
     printf("Saisissez votre prénom : \n");
     scanf("%s", prenom);
 
-    printf("prenom : %s\n", prenom);
     // Envoi du prénom
     send(s, prenom, strlen(prenom) + 1, 0);
 
